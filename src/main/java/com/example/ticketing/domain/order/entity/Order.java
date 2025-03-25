@@ -2,6 +2,7 @@ package com.example.ticketing.domain.order.entity;
 
 import com.example.ticketing.domain.order.enums.OrderStatus;
 import com.example.ticketing.domain.user.entity.User;
+import com.example.ticketing.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "orders")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Order {
+public class Order extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

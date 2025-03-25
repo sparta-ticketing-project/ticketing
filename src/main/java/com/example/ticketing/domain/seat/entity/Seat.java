@@ -1,6 +1,7 @@
 package com.example.ticketing.domain.seat.entity;
 
 import com.example.ticketing.domain.concert.entity.Concert;
+import com.example.ticketing.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "seats")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Seat {
+public class Seat extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

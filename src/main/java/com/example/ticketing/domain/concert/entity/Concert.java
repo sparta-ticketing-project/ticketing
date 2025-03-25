@@ -2,6 +2,7 @@ package com.example.ticketing.domain.concert.entity;
 
 import com.example.ticketing.domain.concert.enums.ConcertType;
 import com.example.ticketing.domain.user.entity.User;
+import com.example.ticketing.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "concerts")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Concert {
+public class Concert extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
