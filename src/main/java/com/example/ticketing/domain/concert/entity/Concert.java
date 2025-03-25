@@ -109,7 +109,8 @@ public class Concert extends BaseTimeEntity {
     }
 
     // 테스트 용도 지워야 된다.
-    public Concert(Long viewCount){
+    public Concert(Long viewCount, ConcertType concertType){
         this.viewCount = viewCount;
+        this.concertType = concertType;
     }
 }
