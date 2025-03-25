@@ -5,13 +5,13 @@ import lombok.Getter;
 
 @Getter
 public class ConcertRankResponse {
-    private final Long rank;
+    private final Integer rank;
     private final Long viewCount;
     private final Long concertId;
     private final String concertName;
 
     @Builder
-    public ConcertRankResponse(Long rank, Long viewCount, Long concertId, String concertName){
+    public ConcertRankResponse(Integer rank, Long viewCount, Long concertId, String concertName){
         this.rank = rank;
         this.viewCount = viewCount;
         this.concertId = concertId;
