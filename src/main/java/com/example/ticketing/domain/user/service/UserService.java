@@ -9,6 +9,7 @@ import com.example.ticketing.global.exception.CustomException;
 import com.example.ticketing.global.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     // 유저 조회
+    @Transactional(readOnly = true)
     public UserResponse getUser(long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
@@ -24,6 +26,7 @@ public class UserService {
     }
 
     // 유저 수정
+    @Transactional
     public UserUpdateResponse updateUser(Long id, UserUpdateRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
