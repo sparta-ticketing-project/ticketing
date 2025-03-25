@@ -40,6 +40,8 @@ public class Concert extends BaseTimeEntity {
 
     private int availableSeatCount;
 
+    private Long viewCount = 0L;
+
     private Boolean isDeleted;
 
     public void updateConcert(
@@ -104,5 +106,10 @@ public class Concert extends BaseTimeEntity {
 
     public void decreaseAvailableSeatCount(int count) {
         this.availableSeatCount -= count;
+    }
+
+    // 테스트 용도 지워야 된다.
+    public Concert(Long viewCount){
+        this.viewCount = viewCount;
     }
 }
