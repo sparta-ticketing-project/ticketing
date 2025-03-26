@@ -49,4 +49,12 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, response.toString())
                 .body("회원탈퇴에 성공했습니다.");
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AccessTokenResponse> refresh(
+            @CookieValue(value = "refreshToken", required = false) String refreshToken
+    ) {
+        AccessTokenResponse response = authService.refresh(refreshToken);
+        return ResponseEntity.ok(response);
+    }
 }

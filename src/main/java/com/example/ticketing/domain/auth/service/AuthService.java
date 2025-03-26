@@ -3,6 +3,7 @@ package com.example.ticketing.domain.auth.service;
 import com.example.ticketing.domain.auth.dto.request.LoginRequest;
 import com.example.ticketing.domain.auth.dto.request.SignUpRequest;
 import com.example.ticketing.domain.auth.dto.request.WithDrawRequest;
+import com.example.ticketing.domain.auth.dto.response.AccessTokenResponse;
 import com.example.ticketing.domain.auth.dto.response.SignUpResponse;
 import com.example.ticketing.domain.auth.dto.response.TokenResponse;
 import com.example.ticketing.domain.auth.entity.RefreshToken;
@@ -106,6 +107,20 @@ public class AuthService {
                 .ifPresent(refreshTokenRepository::delete);
 
         return createRefreshTokenCookie("", 0);
+    }
+
+    @Transactional
+    public AccessTokenResponse refresh(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank() || jwtUtil.isTokenExpired(refreshToken)) {
+            throw new CustomException(ExceptionType.EXPIRED_REFRESH_TOKEN);
+        }
+
+        RefreshToken savedToken = refreshTokenRepository.findByRefreshTokenOrElseThrow(refreshToken);
+
+        User user = savedToken.getUser();
+        String newAccessToken = jwtUtil.createAccessToken(user.getId(), user.getUserRole());
+
+        return new AccessTokenResponse(newAccessToken);
     }
 
     private ResponseCookie createRefreshTokenCookie(String refreshToken, long maxAgeSeconds) {
