@@ -2,13 +2,17 @@ package com.example.ticketing.domain.auth.controller;
 
 import com.example.ticketing.domain.auth.dto.request.LoginRequest;
 import com.example.ticketing.domain.auth.dto.request.SignUpRequest;
+import com.example.ticketing.domain.auth.dto.request.WithDrawRequest;
 import com.example.ticketing.domain.auth.dto.response.AccessTokenResponse;
 import com.example.ticketing.domain.auth.dto.response.SignUpResponse;
 import com.example.ticketing.domain.auth.dto.response.TokenResponse;
 import com.example.ticketing.domain.auth.service.AuthService;
+import com.example.ticketing.global.auth.Auth;
+import com.example.ticketing.global.dto.AuthUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,5 +37,16 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, response.getRefreshToken().toString())
                 .body(AccessTokenResponse.toDto(response));
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<String> withdraw(
+            @Auth AuthUser authUser,
+            @Valid @RequestBody WithDrawRequest dto
+            ) {
+        ResponseCookie response = authService.withdraw(authUser, dto);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, response.toString())
+                .body("회원탈퇴에 성공했습니다.");
     }
 }
