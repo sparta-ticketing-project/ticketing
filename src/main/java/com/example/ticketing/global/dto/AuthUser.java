@@ -11,13 +11,11 @@ import lombok.NoArgsConstructor;
 public class AuthUser {
 
     private Long userId;
-    private String email;
     private UserRole userRole;
 
     @Builder
-    private AuthUser(Long userId, String email, UserRole userRole) {
+    private AuthUser(Long userId, UserRole userRole) {
         this.userId = userId;
-        this.email = email;
         this.userRole = userRole;
     }
 }
