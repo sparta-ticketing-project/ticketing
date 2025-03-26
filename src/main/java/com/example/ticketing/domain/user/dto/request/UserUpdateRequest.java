@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 public class UserUpdateRequest {
     private String username;
-    private Integer age;
     private Gender gender;
+    private Integer age;
 }
