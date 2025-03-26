@@ -34,7 +34,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    private static final Long REFRESH_TOKEN_EXPIRY_DAY = 7 * 24 * 24 * 60L;
+    private static final Long REFRESH_TOKEN_EXPIRY_DAY = 7 * 24 * 60 * 60 * 1000L;
 
     @Transactional
     public SignUpResponse save(SignUpRequest dto) {
