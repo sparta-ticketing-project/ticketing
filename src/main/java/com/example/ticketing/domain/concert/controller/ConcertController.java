@@ -1,11 +1,14 @@
 package com.example.ticketing.domain.concert.controller;
 
 import com.example.ticketing.domain.concert.dto.response.ConcertRankResponse;
+import com.example.ticketing.domain.concert.dto.response.ConcertSearchResponse;
 import com.example.ticketing.domain.concert.dto.response.ConcertSeatDetailResponse;
 import com.example.ticketing.domain.concert.dto.response.ConcertSingleResponse;
 import com.example.ticketing.domain.concert.service.ConcertService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,5 +35,12 @@ public class ConcertController {
     @GetMapping("/v1/concerts/{concertId}")
     public ResponseEntity<ConcertSingleResponse> findSingleConcert(@PathVariable Long concertId){
         return ResponseEntity.ok(concertService.findSingleConcert(concertId));
+    }
+
+    @GetMapping("/v1/concerts")
+    public ResponseEntity<Page<ConcertSearchResponse>> findConcertsByKeyword(@PageableDefault(size=10,page=0)Pageable pageable,
+                                                                             @RequestParam(required = false) String concertName,
+                                                                             @RequestParam(required = false) String concertType){
+        return ResponseEntity.ok(concertService.findConcertsByKeyword(pageable, concertName, concertType));
     }
 }

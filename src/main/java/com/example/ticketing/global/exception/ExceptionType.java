@@ -6,11 +6,12 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ExceptionType {
 
-    // Validation / Request Errors
+    // 400
     REQUEST_VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "요청값 검증에 실패했습니다."),
     INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "유효하지 않은 사용자 유형(UserRole)입니다."),
     INVALID_JWT_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 JWT 토큰입니다."),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    NO_SUCH_CONCERT_TYPE(HttpStatus.BAD_REQUEST, "존재하지 않는 콘서트 타입입니다."),
     INVALID_AUTH_ANNOTATION_USAGE(HttpStatus.BAD_REQUEST, "@Auth와 AuthUser 타입은 함께 사용되어야 합니다."),
     MISSING_JWT_TOKEN(HttpStatus.BAD_REQUEST, "토큰이 요청에 포함되지 않았습니다."),
     REQUIRED_JWT_TOKEN(HttpStatus.BAD_REQUEST, "JWT 토큰이 필요합니다."),

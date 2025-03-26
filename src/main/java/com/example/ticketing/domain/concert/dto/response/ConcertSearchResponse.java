@@ -4,10 +4,9 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
-public class ConcertSingleResponse {
+public class ConcertSearchResponse {
     private final Long id;
     private final String concertName;
     private final String concertType;
@@ -15,10 +14,9 @@ public class ConcertSingleResponse {
     private final LocalDateTime ticketingDate;
     private final Integer totalSeatCount;
     private final Integer availableSeatCount;
-    private final List<ConcertSeatDetailResponse> concertSeatDetailResponses;
 
     @Builder
-    public ConcertSingleResponse(Long id, String concertName, String concertType, LocalDateTime concertDate, LocalDateTime ticketingDate, Integer totalSeatCount, Integer availableSeatCount, List<ConcertSeatDetailResponse> concertSeatDetailResponses) {
+    public ConcertSearchResponse(Long id, String concertName, String concertType, LocalDateTime concertDate, LocalDateTime ticketingDate, Integer totalSeatCount, Integer availableSeatCount) {
         this.id = id;
         this.concertName = concertName;
         this.concertType = concertType;
@@ -26,6 +24,5 @@ public class ConcertSingleResponse {
         this.ticketingDate = ticketingDate;
         this.totalSeatCount = totalSeatCount;
         this.availableSeatCount = availableSeatCount;
-        this.concertSeatDetailResponses = concertSeatDetailResponses;
     }
 }

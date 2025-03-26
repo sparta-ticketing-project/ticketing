@@ -12,7 +12,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "concerts", indexes = @Index(name = "idx_view_count", columnList = "viewCount"))
+@Table(name = "concerts", indexes = {
+        @Index(name = "idx_view_count", columnList = "viewCount")
+        , @Index(name="idx_type_name", columnList = "concertType, concertName")
+})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Concert extends BaseTimeEntity {
@@ -113,8 +116,9 @@ public class Concert extends BaseTimeEntity {
     }
 
     // 테스트 용도 지워야 된다.
-    public Concert(Long viewCount, ConcertType concertType){
+    public Concert(Long viewCount, ConcertType concertType, String concertName){
         this.viewCount = viewCount;
         this.concertType = concertType;
+        this.concertName = concertName;
     }
 }
