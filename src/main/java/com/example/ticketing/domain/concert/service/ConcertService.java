@@ -10,11 +10,15 @@ import com.example.ticketing.domain.seat.repository.SeatDetailRepository;
 import com.example.ticketing.global.exception.CustomException;
 import com.example.ticketing.global.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +28,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@EnableCaching
+@EnableScheduling
 public class ConcertService {
     private final ConcertRepository concertRepository;
     private final SeatDetailRepository seatDetailRepository;
@@ -49,31 +55,33 @@ public class ConcertService {
         return new PageImpl<>(concertRankResponses, concerts.getPageable(), concerts.getTotalElements());
     }
 
-//    @Cacheable
-//    @Transactional(readOnly = true)
-//    public Page<ConcertRankResponse> findPopularConcertsV2(Integer limit){
-//        Pageable pageable = PageRequest.of(0, limit);
-//
-//        List<ConcertRankResponse> concertRankResponses = new ArrayList<>();
-//
-//        Page<Concert> concerts = concertRepository.findPopularConcerts(pageable);
-//
-//        Integer rank = 1;
-//        for(Concert concert : concerts){
-//            concertRankResponses.add(ConcertRankResponse.builder()
-//                    .rank(rank++)
-//                    .viewCount(concert.getViewCount())
-//                    .concertId(concert.getId())
-//                    .concertName(concert.getConcertName())
-//                    .build());
-//        }
-//
-//        return new PageImpl<>(concertRankResponses, concerts.getPageable(), concerts.getTotalElements());
-//    }
-
+    @Cacheable(value="popularConcerts", key = "#limit")
     @Transactional(readOnly = true)
+    public Page<ConcertRankResponse> findPopularConcertsV2(Integer limit){
+        Pageable pageable = PageRequest.of(0, limit);
+
+        List<ConcertRankResponse> concertRankResponses = new ArrayList<>();
+
+        Page<Concert> concerts = concertRepository.findPopularConcerts(pageable);
+
+        Integer rank = 1;
+        for(Concert concert : concerts){
+            concertRankResponses.add(ConcertRankResponse.builder()
+                    .rank(rank++)
+                    .viewCount(concert.getViewCount())
+                    .concertId(concert.getId())
+                    .concertName(concert.getConcertName())
+                    .build());
+        }
+
+        return new PageImpl<>(concertRankResponses, concerts.getPageable(), concerts.getTotalElements());
+    }
+
+    @Transactional
     public ConcertSingleResponse findSingleConcert(Long concertId){
         Concert concert = concertRepository.findById(concertId).orElseThrow(() -> new CustomException(ExceptionType.CONCERT_NOT_FOUND));
+
+        concert.increaseViewCount();
 
         List<SeatDetail> seatDetails = seatDetailRepository.findSeatDetailsByConcertId(concertId);
 
@@ -94,5 +102,11 @@ public class ConcertService {
                 .availableSeatCount(concert.getAvailableSeatCount())
                 .concertSeatDetailResponses(concertSeatDetailResponses)
                 .build();
+    }
+
+    @Scheduled(fixedRate = 60000)
+    @CacheEvict(value = "popularConcerts", allEntries = true)
+    public void clearPopularConcertCache(){
+        
     }
 }
