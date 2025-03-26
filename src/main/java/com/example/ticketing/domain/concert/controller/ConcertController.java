@@ -20,8 +20,13 @@ public class ConcertController {
     private final ConcertService concertService;
 
     @GetMapping("/v1/concerts/popular")
-    public ResponseEntity<Page<ConcertRankResponse>> findPopularConcerts(@RequestParam(defaultValue = "10") Integer limit){
+    public ResponseEntity<Page<ConcertRankResponse>> findPopularConcertsV1(@RequestParam(defaultValue = "10") Integer limit){
         return ResponseEntity.ok(concertService.findPopularConcertsV1(limit));
+    }
+
+    @GetMapping("/v2/concerts/popular")
+    public ResponseEntity<Page<ConcertRankResponse>> findPopularConcertsV2(@RequestParam(defaultValue = "10") Integer limit){
+        return ResponseEntity.ok(concertService.findPopularConcertsV2(limit));
     }
 
     @GetMapping("/v1/concerts/{concertId}")

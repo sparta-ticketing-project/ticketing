@@ -108,6 +108,10 @@ public class Concert extends BaseTimeEntity {
         this.availableSeatCount -= count;
     }
 
+    public void increaseViewCount(){
+        viewCount++;
+    }
+
     // 테스트 용도 지워야 된다.
     public Concert(Long viewCount, ConcertType concertType){
         this.viewCount = viewCount;
