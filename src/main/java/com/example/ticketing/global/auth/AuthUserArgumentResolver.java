@@ -35,12 +35,10 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
         Long userId = (Long) request.getAttribute("userId");
-        String email = (String) request.getAttribute("email");
-        UserRole userRole = (UserRole) request.getAttribute("userRole");
+        UserRole userRole = UserRole.of((String) request.getAttribute("userRole"));
 
         return AuthUser.builder()
                 .userId(userId)
-                .email(email)
                 .userRole(userRole)
                 .build();
     }
