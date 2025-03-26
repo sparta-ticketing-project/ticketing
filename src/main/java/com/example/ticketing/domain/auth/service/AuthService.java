@@ -2,6 +2,7 @@ package com.example.ticketing.domain.auth.service;
 
 import com.example.ticketing.domain.auth.dto.request.LoginRequest;
 import com.example.ticketing.domain.auth.dto.request.SignUpRequest;
+import com.example.ticketing.domain.auth.dto.request.UpdatePasswordRequest;
 import com.example.ticketing.domain.auth.dto.request.WithDrawRequest;
 import com.example.ticketing.domain.auth.dto.response.AccessTokenResponse;
 import com.example.ticketing.domain.auth.dto.response.SignUpResponse;
@@ -69,7 +70,7 @@ public class AuthService {
         }
 
         if (!passwordEncoder.matches(dto.getPassword(), findUser.getPassword())) {
-            throw new CustomException(ExceptionType.INVALID_CREDENTIALS);
+            throw new CustomException(ExceptionType.INCORRECT_PASSWORD);
         }
 
         String accessToken = jwtUtil.createAccessToken(findUser.getId(), findUser.getUserRole());
@@ -88,6 +89,20 @@ public class AuthService {
                 );
 
         return new TokenResponse(accessToken, createRefreshTokenCookie(refreshToken, REFRESH_TOKEN_EXPIRY_DAY));
+    }
+
+    @Transactional
+    public void updatePassword(AuthUser authUser, UpdatePasswordRequest dto) {
+        User findUser = userRepository.findByIdOrElseThrow(authUser.getUserId());
+        if (dto.getOldPassword().equals(dto.getNewPassword())) {
+            throw new CustomException(ExceptionType.SAME_AS_OLD_PASSWORD);
+        }
+
+        if (!passwordEncoder.matches(dto.getOldPassword(), findUser.getPassword())) {
+            throw new CustomException(ExceptionType.INCORRECT_PASSWORD);
+        }
+
+        findUser.updatePassword(passwordEncoder.encode(dto.getNewPassword()));
     }
 
     @Transactional

@@ -2,6 +2,7 @@ package com.example.ticketing.domain.auth.controller;
 
 import com.example.ticketing.domain.auth.dto.request.LoginRequest;
 import com.example.ticketing.domain.auth.dto.request.SignUpRequest;
+import com.example.ticketing.domain.auth.dto.request.UpdatePasswordRequest;
 import com.example.ticketing.domain.auth.dto.request.WithDrawRequest;
 import com.example.ticketing.domain.auth.dto.response.AccessTokenResponse;
 import com.example.ticketing.domain.auth.dto.response.SignUpResponse;
@@ -37,6 +38,15 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, response.getRefreshToken().toString())
                 .body(AccessTokenResponse.toDto(response));
+    }
+
+    @PatchMapping("/password")
+    public ResponseEntity<String> updatePassword(
+            @Auth AuthUser authUser,
+            @Valid @RequestBody UpdatePasswordRequest dto
+            ) {
+        authService.updatePassword(authUser, dto);
+        return ResponseEntity.ok("비밀번호 변경에 성공했습니다.");
     }
 
     @PostMapping("/withdraw")
