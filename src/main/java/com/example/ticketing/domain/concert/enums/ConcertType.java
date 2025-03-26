@@ -22,6 +22,13 @@ public enum ConcertType {
         return description;
     }
 
+    public static ConcertType of(String name){
+        return Arrays.stream(values())
+                .filter(concertType -> concertType.name().equalsIgnoreCase(name))
+                .findFirst()
+                .orElseThrow(() ->new CustomException(ExceptionType.NO_SUCH_CONCERT_TYPE));
+    }
+
     public static ConcertType fromString(String value) {
 
         return Arrays.stream(ConcertType.values())

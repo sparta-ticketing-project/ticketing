@@ -15,6 +15,8 @@ import org.springframework.data.web.PageableDefault;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,8 +31,15 @@ class ConcertRepositoryTest {
     @Test
     void saveTestData(){
         List<Concert> concerts = new ArrayList<>();
+
+        ConcertType[] concertTypes = ConcertType.values();
+
+        Random random = new Random(System.currentTimeMillis());
+
         for(int i=0;i<50000;i++){
-            Concert concert = new Concert(i+1L, ConcertType.MUSICAL);
+            Concert concert = new Concert(i+1L,
+                    concertTypes[random.nextInt(concertTypes.length)],
+                    "user-" + UUID.randomUUID().toString().substring(0,8));
             concerts.add(concert);
         }
         concertRepository.saveAll(concerts);

@@ -13,7 +13,7 @@ import java.util.List;
 import javax.swing.text.html.Option;
 import java.util.Optional;
 
-public interface ConcertRepository extends JpaRepository<Concert, Long> {
+public interface ConcertRepository extends JpaRepository<Concert, Long>, ConcertRepositoryCustom {
     @Query("SELECT c FROM Concert c ORDER BY c.viewCount DESC")
     Page<Concert> findPopularConcerts(Pageable pageable);
 
