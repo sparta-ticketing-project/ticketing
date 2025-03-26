@@ -42,12 +42,14 @@ public class Concert extends BaseTimeEntity {
 
     @Builder
     public Concert (
+            User user,
             String concertName,
             LocalDateTime concertDate,
             LocalDateTime ticketingDate,
             ConcertType concertType,
             int maxTicketPerUser
     ) {
+        this.user = user;
         this.concertName = concertName;
         this.concertDate = concertDate;
         this.ticketingDate = ticketingDate;
