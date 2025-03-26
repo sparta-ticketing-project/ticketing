@@ -2,6 +2,7 @@ package com.example.ticketing.domain.auth.service;
 
 import com.example.ticketing.domain.auth.dto.request.LoginRequest;
 import com.example.ticketing.domain.auth.dto.request.SignUpRequest;
+import com.example.ticketing.domain.auth.dto.request.WithDrawRequest;
 import com.example.ticketing.domain.auth.dto.response.SignUpResponse;
 import com.example.ticketing.domain.auth.dto.response.TokenResponse;
 import com.example.ticketing.domain.auth.entity.RefreshToken;
@@ -10,6 +11,7 @@ import com.example.ticketing.domain.user.repository.UserRepository;
 import com.example.ticketing.domain.user.entity.User;
 import com.example.ticketing.global.auth.JwtUtil;
 import com.example.ticketing.global.config.PasswordEncoder;
+import com.example.ticketing.global.dto.AuthUser;
 import com.example.ticketing.global.exception.CustomException;
 import com.example.ticketing.global.exception.ExceptionType;
 import jakarta.validation.Valid;
@@ -85,6 +87,25 @@ public class AuthService {
                 );
 
         return new TokenResponse(accessToken, createRefreshTokenCookie(refreshToken, REFRESH_TOKEN_EXPIRY_DAY));
+    }
+
+    @Transactional
+    public ResponseCookie withdraw(AuthUser authUser, WithDrawRequest dto) {
+        User findUser = userRepository.findByIdOrElseThrow(authUser.getUserId());
+        if (!passwordEncoder.matches(dto.getPassword(), findUser.getPassword())) {
+            throw new CustomException(ExceptionType.INVALID_CREDENTIALS);
+        }
+
+        if (findUser.isDeleted()) {
+            throw new CustomException(ExceptionType.ALREADY_DELETED_USER);
+        }
+
+        findUser.deleteUser();
+
+        refreshTokenRepository.findByUser(findUser)
+                .ifPresent(refreshTokenRepository::delete);
+
+        return createRefreshTokenCookie("", 0);
     }
 
     private ResponseCookie createRefreshTokenCookie(String refreshToken, long maxAgeSeconds) {

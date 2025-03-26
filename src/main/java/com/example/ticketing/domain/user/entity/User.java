@@ -49,4 +49,8 @@ public class User extends BaseTimeEntity {
         this.point = 10000;
         this.deleted = false;
     }
+
+    public void deleteUser() {
+        this.deleted = true;
+    }
 }
