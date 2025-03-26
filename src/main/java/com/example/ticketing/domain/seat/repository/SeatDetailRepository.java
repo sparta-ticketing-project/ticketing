@@ -9,7 +9,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
+import java.util.List;
+
 public interface SeatDetailRepository extends JpaRepository<SeatDetail, Long> {
+    List<SeatDetail> findByConcertId(Long concertId);
     @Query("SELECT s FROM SeatDetail s WHERE s.concert.id = :concertId")
     List<SeatDetail> findSeatDetailsByConcertId(@Param(value = "concertId") Long concertId);
 
