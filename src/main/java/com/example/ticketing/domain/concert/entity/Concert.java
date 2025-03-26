@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "concerts")
+@Table(name = "concerts", indexes = @Index(name = "idx_view_count", columnList = "viewCount"))
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Concert extends BaseTimeEntity {
