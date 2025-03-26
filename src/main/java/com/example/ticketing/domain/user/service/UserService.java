@@ -22,7 +22,7 @@ public class UserService {
     public UserResponse getUser(long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
-        return new UserResponse(user.getId(), user.getEmail());
+        return new UserResponse(user.getId(), user.getUsername(), user.getPoint(), user.getEmail(), user.getGender(), user.getAge());
     }
 
     // 유저 수정
