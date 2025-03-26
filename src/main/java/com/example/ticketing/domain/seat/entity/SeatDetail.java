@@ -33,7 +33,7 @@ public class SeatDetail extends BaseTimeEntity {
     private int availableSeatCount;
 
     @Builder
-    public SeatDetail (
+    public SeatDetail(
             Concert concert,
             SeatType seatType,
             int price,
@@ -45,5 +45,13 @@ public class SeatDetail extends BaseTimeEntity {
         this.price = price;
         this.totalSeatCount = totalSeatCount;
         this.availableSeatCount = availableSeatCount;
+    }
+
+    public void increaseAvailableSeatCount(int count) {
+        this.availableSeatCount += count;
+    }
+
+    public void decreaseAvailableSeatCount(int count) {
+        this.availableSeatCount -= count;
     }
 }

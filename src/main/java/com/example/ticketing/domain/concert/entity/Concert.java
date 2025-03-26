@@ -56,4 +56,12 @@ public class Concert extends BaseTimeEntity {
         this.concertType = concertType;
         this.maxTicketPerUser = maxTicketPerUser;
     }
+
+    public void increaseAvailableSeatCount(int count) {
+        this.availableSeatCount += count;
+    }
+
+    public void decreaseAvailableSeatCount(int count) {
+        this.availableSeatCount -= count;
+    }
 }

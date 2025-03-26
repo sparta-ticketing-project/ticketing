@@ -44,4 +44,12 @@ public class Seat extends BaseTimeEntity {
         this.isAvailable = isAvailable;
         this.seatNumber = seatNumber;
     }
+
+    public void markAsUnavailable() {
+        this.isAvailable = false;
+    }
+
+    public void markAsAvailable() {
+        this.isAvailable = true;
+    }
 }

@@ -3,6 +3,8 @@ package com.example.ticketing.domain.user.entity;
 import com.example.ticketing.domain.user.enums.Gender;
 import com.example.ticketing.domain.user.enums.UserRole;
 import com.example.ticketing.global.entity.BaseTimeEntity;
+import com.example.ticketing.global.exception.CustomException;
+import com.example.ticketing.global.exception.ExceptionType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -76,5 +78,17 @@ public class User extends BaseTimeEntity {
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void deductPoint(int amount) {
+        if (this.point < amount) {
+            throw new CustomException(ExceptionType.USER_POINT_NOT_ENOUGH);
+        }
+
+        this.point -= amount;
+    }
+
+    public void addPoint(int amount) {
+        this.point += amount;
     }
 }
