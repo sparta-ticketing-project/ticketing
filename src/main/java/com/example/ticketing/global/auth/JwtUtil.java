@@ -33,9 +33,8 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(secretkey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createAccessToken(Long userId, String email, UserRole userRole) {
+    public String createAccessToken(Long userId, UserRole userRole) {
         Map<String, String> claims = Map.of(
-                "email", email,
                 "userRole", userRole.name()
         );
 
@@ -81,6 +80,6 @@ public class JwtUtil {
             return tokenValue.substring(7);
         }
 
-        throw new CustomException(ExceptionType.MISSING_TOKEN);
+        throw new CustomException(ExceptionType.MISSING_JWT_TOKEN);
     }
 }

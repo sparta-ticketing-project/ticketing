@@ -19,6 +19,7 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String email;
 
     private String password;
@@ -31,14 +32,14 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    private int age;
+    private Integer age;
 
     private int point;
 
-    @Builder
+    private boolean deleted;
 
-    public User(Long id, String email, String password, String username, UserRole userRole, Gender gender, int age) {
-        this.id = id;
+    @Builder
+    public User(String email, String password, String username, UserRole userRole, Gender gender, int age) {
         this.email = email;
         this.password = password;
         this.username = username;
@@ -46,5 +47,6 @@ public class User extends BaseTimeEntity {
         this.gender = gender;
         this.age = age;
         this.point = 10000;
+        this.deleted = false;
     }
 }
