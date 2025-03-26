@@ -63,10 +63,10 @@ public class User extends BaseTimeEntity {
         this.age = age;
     }
 
-    public void update(String username, Integer age, Gender gender) {
+    public void update(String username, Gender gender, Integer age) {
         this.username = username;
-        this.age = age;
         this.gender = gender;
+        this.age = age;
     }
 
     public void deleteUser() {

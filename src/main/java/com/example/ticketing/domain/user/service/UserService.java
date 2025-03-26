@@ -31,9 +31,9 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
 
-        user.update(request.getUsername(), request.getAge(), request.getGender());
+        user.update(request.getUsername(), request.getGender(), request.getAge());
         User updatedUser = userRepository.save(user);
 
-        return new UserUpdateResponse(updatedUser.getId(), updatedUser.getUsername(), updatedUser.getAge(), updatedUser.getGender());
+        return new UserUpdateResponse(updatedUser.getId(), updatedUser.getUsername(), updatedUser.getGender(), updatedUser.getAge());
     }
 }

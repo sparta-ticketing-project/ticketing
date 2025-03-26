@@ -7,13 +7,13 @@ import lombok.Getter;
 public class UserUpdateResponse {
     private final Long id;
     private final String username;
-    private final Integer age;
     private final Gender gender;
+    private final Integer age;
 
-    public UserUpdateResponse(Long id, String username, Integer age, Gender gender) {
+    public UserUpdateResponse(Long id, String username, Gender gender, Integer age) {
         this.id = id;
         this.username = username;
-        this.age = age;
         this.gender = gender;
+        this.age = age;
     }
 }
