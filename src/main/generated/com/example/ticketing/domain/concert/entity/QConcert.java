@@ -37,6 +37,8 @@ public class QConcert extends EntityPathBase<Concert> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final BooleanPath isDeleted = createBoolean("isDeleted");
+
     public final NumberPath<Integer> maxTicketPerUser = createNumber("maxTicketPerUser", Integer.class);
 
     //inherited

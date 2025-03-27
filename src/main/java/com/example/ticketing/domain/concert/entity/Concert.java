@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "concerts", indexes = {
-        @Index(name = "idx_view_count", columnList = "viewCount")
+        @Index(name = "idx_view_count_is_deleted", columnList = "viewCount, isDeleted")
         , @Index(name="idx_type_name", columnList = "concertType, concertName")
 })
 @Getter
@@ -45,7 +45,7 @@ public class Concert extends BaseTimeEntity {
 
     private Long viewCount = 0L;
 
-    private Boolean isDeleted;
+    private boolean isDeleted;
 
     public void updateConcert(
             String concertName,
