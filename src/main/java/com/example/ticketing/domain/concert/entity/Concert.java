@@ -40,18 +40,63 @@ public class Concert extends BaseTimeEntity {
 
     private int availableSeatCount;
 
-    @Builder
-    public Concert (
+    private Boolean isDeleted;
+
+    public void updateConcert(
             String concertName,
             LocalDateTime concertDate,
             LocalDateTime ticketingDate,
             ConcertType concertType,
-            int maxTicketPerUser
+            Integer maxTicketPerUser) {
+        if (concertName != null) {
+            this.concertName = concertName;
+        }
+
+        if (concertDate != null) {
+            this.concertDate = concertDate;
+        }
+
+        if (ticketingDate != null) {
+            this.ticketingDate = ticketingDate;
+        }
+
+        if (concertType != null) {
+            this.concertType = concertType;
+        }
+
+        if (maxTicketPerUser != null) {
+            this.maxTicketPerUser = maxTicketPerUser;
+        }
+    }
+
+    public void setTotalSeatCount(int totalSeatCount) {
+        this.totalSeatCount = totalSeatCount;
+    }
+
+    public void setAvailableSeatCount(int availableSeatCount) {
+        this.availableSeatCount = availableSeatCount;
+    }
+
+    public void setIsDeleted(Boolean isDeleted) {this.isDeleted = isDeleted;}
+
+    @Builder
+    public Concert (
+            Long id,
+            User user,
+            String concertName,
+            LocalDateTime concertDate,
+            LocalDateTime ticketingDate,
+            ConcertType concertType,
+            int maxTicketPerUser,
+            Boolean isDeleted
     ) {
+        this.id = id;
+        this.user = user;
         this.concertName = concertName;
         this.concertDate = concertDate;
         this.ticketingDate = ticketingDate;
         this.concertType = concertType;
         this.maxTicketPerUser = maxTicketPerUser;
+        this.isDeleted = isDeleted;
     }
 }
