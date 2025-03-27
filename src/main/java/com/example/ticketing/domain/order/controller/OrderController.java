@@ -2,6 +2,7 @@ package com.example.ticketing.domain.order.controller;
 
 import com.example.ticketing.domain.order.dto.request.CreateOrderRequest;
 import com.example.ticketing.domain.order.dto.response.CreateOrderResponse;
+import com.example.ticketing.domain.order.dto.response.OrderResponse;
 import com.example.ticketing.domain.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,4 +25,11 @@ public class OrderController {
         return ResponseEntity.ok(orderService.createOrder(userId, concertId, createOrderRequest));
     }
 
+    @GetMapping("/v1/orders/{orderId}")
+    public ResponseEntity<OrderResponse> getOrder (
+            @RequestParam Long userId,
+            @PathVariable Long orderId
+    ) {
+        return ResponseEntity.ok(orderService.getOrder(userId, orderId));
+    }
 }
