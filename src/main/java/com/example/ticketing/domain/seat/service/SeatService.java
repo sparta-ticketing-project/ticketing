@@ -38,19 +38,38 @@ public class SeatService {
         List<SeatDetail> seatDetails = seatDetailRepository.findByConcertId(concertId);
 
         List<SeatDetailResponse> seatDetailResponses = seatDetails.stream()
-                .map(sd -> new SeatDetailResponse(sd.getId(), sd.getSeatType().name(), sd.getPrice()))
+                .map(sd -> SeatDetailResponse.builder()
+                            .id(sd.getId())
+                            .seatType(sd.getSeatType().name())
+                            .price(sd.getPrice())
+                            .build())
                 .collect(Collectors.toList());
 
         List<SeatItemResponse> seatItems = seatPage.getContent().stream()
-                .map(seat -> new SeatItemResponse(seat.getId(), seat.getSeatNumber(),
-                        seat.getSeatDetail() != null ? seat.getSeatDetail().getId() : null))
+                .map(seat -> SeatItemResponse.builder()
+                            .seatId(seat.getId())
+                            .seatNumber(seat.getSeatNumber())
+                            .seatDetailId(seat.getSeatDetail() != null ? seat.getSeatDetail().getId() : null)
+                            .build())
                 .collect(Collectors.toList());
 
-        return new SeatResponse(
-                new ConcertResponse(concert.getId(), concert.getConcertName(), concert.getConcertDate(), concert.getTicketingDate(), concert.getMaxTicketPerUser()),
-                seatDetailResponses,
-                new SeatPageResponse(page, pageSize, seatPage.getTotalElements(), seatPage.getTotalPages(), seatItems)
-        );
+        return SeatResponse.builder()
+                .concert(ConcertResponse.builder()
+                        .concertId(concert.getId())
+                        .concertName(concert.getConcertName())
+                        .concertDate(concert.getConcertDate())
+                        .ticketingDate(concert.getTicketingDate())
+                        .maxTicketPerUser(concert.getMaxTicketPerUser())
+                        .build())
+                .seatDetails(seatDetailResponses)
+                .seats(SeatPageResponse.builder()
+                        .page(page)
+                        .pageSize(pageSize)
+                        .totalCount(seatPage.getTotalElements())
+                        .totalPages(seatPage.getTotalPages())
+                        .items(seatItems)
+                        .build())
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -71,14 +90,15 @@ public class SeatService {
             throw new CustomException(ExceptionType.SEAT_DETAIL_NOT_FOUND);
         }
 
-        return new SeatItemDetailResponse(
-                seat.getId(),
-                seat.getConcert().getId(),
-                seatDetail.getId(),
-                seatDetail.getSeatType(),
-                seatDetail.getPrice(),
-                seat.isAvailable(),
-                seat.getSeatNumber()
-        );
+        return SeatItemDetailResponse.builder()
+                .seatId(seat.getId())
+                .concertId(seat.getConcert().getId())
+                .seatDetailId(seatDetail.getId())
+                .seatType(seatDetail.getSeatType())
+                .price(seatDetail.getPrice())
+                .isAvailable(seat.isAvailable())
+                .seatNumber(seat.getSeatNumber())
+                .build();
     }
 }
+

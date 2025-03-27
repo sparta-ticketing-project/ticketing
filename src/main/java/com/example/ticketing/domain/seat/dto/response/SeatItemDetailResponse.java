@@ -1,15 +1,12 @@
 package com.example.ticketing.domain.seat.dto.response;
 
 import com.example.ticketing.domain.seat.enums.SeatType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class SeatItemDetailResponse {
     private Long seatId;
     private Long concertId;
