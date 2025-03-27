@@ -38,6 +38,10 @@ public class AuthService {
 
     @Transactional
     public SignUpResponse save(SignUpRequest dto) {
+        userRepository.findByEmail(dto.getEmail())
+                .ifPresent(user -> {
+                    throw new CustomException(ExceptionType.DUPLICATE_EMAIL);
+                });
         String encode = passwordEncoder.encode(dto.getPassword());
         User user = User.builder()
                 .email(dto.getEmail())
