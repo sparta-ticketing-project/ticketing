@@ -22,20 +22,27 @@ public class User extends BaseTimeEntity {
     @Column(unique = true)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     private String username;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserRole userRole;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Gender gender;
 
+    @Column(nullable = false)
     private Integer age;
 
+    @Column(nullable = false)
     private int point;
 
+    @Column(nullable = false)
     private boolean deleted;
 
     @Builder
@@ -52,6 +59,7 @@ public class User extends BaseTimeEntity {
 
     public void deleteUser() {
         this.deleted = true;
+        this.email = null;
     }
 
     public void updatePassword(String password) {
