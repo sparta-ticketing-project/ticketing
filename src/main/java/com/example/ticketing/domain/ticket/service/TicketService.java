@@ -41,6 +41,9 @@ public class TicketService {
         return ticketRepository.saveAll(tickets);
     }
 
+    public List<Ticket> getTicketsByOrder(Order order) {
+        return ticketRepository.findAllWithSeatAndSeatDetailByOrder(order);
+    }
 
     public void validateUserTicketLimit(Concert concert, User user, int requestedCount) {
         int maxAllowed = concert.getMaxTicketPerUser();

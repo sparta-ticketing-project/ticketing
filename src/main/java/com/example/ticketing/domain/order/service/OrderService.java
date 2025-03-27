@@ -4,6 +4,7 @@ import com.example.ticketing.domain.concert.entity.Concert;
 import com.example.ticketing.domain.concert.repository.ConcertRepository;
 import com.example.ticketing.domain.order.dto.request.CreateOrderRequest;
 import com.example.ticketing.domain.order.dto.response.CreateOrderResponse;
+import com.example.ticketing.domain.order.dto.response.OrderResponse;
 import com.example.ticketing.domain.order.entity.Order;
 import com.example.ticketing.domain.order.enums.OrderStatus;
 import com.example.ticketing.domain.order.repository.OrderRepository;
@@ -65,6 +66,18 @@ public class OrderService {
 
         user.deductPoint(amount);
     }
+    @Transactional(readOnly = true)
+    public OrderResponse getOrder(Long userId, Long orderId) {
+        User user = getUserById(userId);
+        Order order = getOrderById(orderId);
+        Concert concert = order.getConcert();
+
+        validateOrderOwner(user, order);
+
+        List<Ticket> tickets = ticketService.getTicketsByOrder(order);
+
+        return OrderResponse.of(concert, order, tickets);
+    }
 
     private void validateConcertDate(LocalDateTime concertDate) {
         LocalDateTime now = LocalDateTime.now();
@@ -80,6 +93,12 @@ public class OrderService {
         }
     }
 
+    private void validateOrderOwner(User user, Order order) {
+        if (order.getUser() != user) {
+            throw new CustomException(ExceptionType.NO_PERMISSION_ACTION, "주문 당사자만 가능한 작업입니다.");
+        }
+    }
+
     private User getUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(()-> new CustomException(ExceptionType.USER_NOT_FOUND));
@@ -90,6 +109,10 @@ public class OrderService {
                 .orElseThrow(()-> new CustomException(ExceptionType.CONCERT_NOT_FOUND));
     }
 
+    private Order getOrderById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(()-> new CustomException(ExceptionType.ORDER_NOT_FOUND));
+    }
 
     private int getTotalPriceFrom(List<Ticket> tickets) {
         return tickets.stream()
