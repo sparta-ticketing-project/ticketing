@@ -3,12 +3,17 @@ package com.example.ticketing.domain.concert.repository;
 import com.example.ticketing.domain.concert.entity.Concert;
 import com.example.ticketing.domain.concert.entity.QConcert;
 import com.example.ticketing.domain.concert.enums.ConcertType;
+import com.example.ticketing.domain.order.enums.OrderStatus;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -26,7 +31,7 @@ public class ConcertRepositoryImpl implements ConcertRepositoryCustom{
 
         List<Concert> concerts = queryFactory.selectFrom(concert)
                 .where(searchByConcertType(concertType), searchByConcertName(concertName))
-                .orderBy(concert.id.asc())
+                .orderBy(orderBy(pageable))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -53,5 +58,22 @@ public class ConcertRepositoryImpl implements ConcertRepositoryCustom{
         }
 
         return concert.concertType.eq(ConcertType.of(concertType));
+    }
+
+    private OrderSpecifier orderBy(Pageable pageable){
+        Sort sort = pageable.getSort();
+
+        if(sort.isSorted()){
+            Sort.Order order = sort.iterator().next();
+            String fieldName = order.getProperty();
+
+            if(fieldName.equals("concertDate")){
+                return new OrderSpecifier(
+                        order.isAscending() ? Order.ASC : Order.DESC,
+                        concert.concertDate
+                );
+            }
+        }
+        return concert.id.asc();
     }
 }
