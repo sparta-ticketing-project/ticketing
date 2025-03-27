@@ -23,4 +23,5 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
     @EntityGraph(attributePaths = {"seatDetail", "concert"})
     @Query("SELECT s From Seat s WHERE s.id IN :seatIds")
     List<Seat> findAllWithSeatDetailAndConcertByIdIn(List<Long> seatIds);
+
 }

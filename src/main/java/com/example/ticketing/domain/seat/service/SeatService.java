@@ -9,7 +9,6 @@ import com.example.ticketing.domain.seat.repository.SeatDetailRepository;
 import com.example.ticketing.domain.seat.repository.SeatRepository;
 import com.example.ticketing.global.exception.CustomException;
 import com.example.ticketing.global.exception.ExceptionType;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -30,6 +29,10 @@ public class SeatService {
     public SeatResponse getSeats(Long concertId, int page, int pageSize) {
         Concert concert = concertRepository.findById(concertId)
                 .orElseThrow(() -> new CustomException(ExceptionType.CONCERT_NOT_FOUND));
+
+        if (concert.isDeleted()) {
+            throw new CustomException(ExceptionType.CONCERT_NOT_FOUND);
+        }
 
         Page<Seat> seatPage = seatRepository.findByConcertId(concertId, PageRequest.of(page - 1, pageSize));
         List<SeatDetail> seatDetails = seatDetailRepository.findByConcertId(concertId);
@@ -55,7 +58,11 @@ public class SeatService {
         Seat seat = seatRepository.findById(seatId)
                 .orElseThrow(() -> new CustomException(ExceptionType.SEAT_NOT_FOUND));
 
-        if (!seat.getConcert().getId().equals(concertId)) {
+        if (seat.getConcert() == null || seat.getConcert().isDeleted()) {
+            throw new CustomException(ExceptionType.CONCERT_NOT_FOUND);
+        }
+
+        if (!concertId.equals(seat.getConcert().getId())) {
             throw new CustomException(ExceptionType.CONCERT_SEAT_MISMATCH);
         }
 
