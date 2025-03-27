@@ -1,11 +1,7 @@
 package com.example.ticketing.domain.seat.service;
 
 import com.example.ticketing.domain.concert.entity.Concert;
-import com.example.ticketing.domain.seat.dto.response.ConcertResponse;
-import com.example.ticketing.domain.seat.dto.response.SeatDetailResponse;
-import com.example.ticketing.domain.seat.dto.response.SeatItemResponse;
-import com.example.ticketing.domain.seat.dto.response.SeatPageResponse;
-import com.example.ticketing.domain.seat.dto.response.SeatResponse;
+import com.example.ticketing.domain.seat.dto.response.*;
 import com.example.ticketing.domain.seat.entity.Seat;
 import com.example.ticketing.domain.seat.entity.SeatDetail;
 import com.example.ticketing.domain.concert.repository.ConcertRepository;
@@ -51,6 +47,31 @@ public class SeatService {
                 new ConcertResponse(concert.getId(), concert.getConcertName(), concert.getConcertDate(), concert.getTicketingDate(), concert.getMaxTicketPerUser()),
                 seatDetailResponses,
                 new SeatPageResponse(page, pageSize, seatPage.getTotalElements(), seatPage.getTotalPages(), seatItems)
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public SeatItemDetailResponse getSeat(Long concertId, Long seatId) {
+        Seat seat = seatRepository.findById(seatId)
+                .orElseThrow(() -> new CustomException(ExceptionType.SEAT_NOT_FOUND));
+
+        if (!seat.getConcert().getId().equals(concertId)) {
+            throw new CustomException(ExceptionType.CONCERT_SEAT_MISMATCH);
+        }
+
+        SeatDetail seatDetail = seat.getSeatDetail();
+        if (seatDetail == null) {
+            throw new CustomException(ExceptionType.SEAT_DETAIL_NOT_FOUND);
+        }
+
+        return new SeatItemDetailResponse(
+                seat.getId(),
+                seat.getConcert().getId(),
+                seatDetail.getId(),
+                seatDetail.getSeatType(),
+                seatDetail.getPrice(),
+                seat.isAvailable(),
+                seat.getSeatNumber()
         );
     }
 }
