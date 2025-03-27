@@ -38,18 +38,19 @@ public class SeatService {
         Page<Seat> seatPage = seatRepository.findByConcertId(concertId, PageRequest.of(page - 1, pageSize));
         List<SeatDetail> seatDetails = seatDetailRepository.findByConcertId(concertId);
 
-        List<SeatDetailResponse> seatDetailDtos = seatDetails.stream()
+        List<SeatDetailResponse> seatDetailResponses = seatDetails.stream()
                 .map(sd -> new SeatDetailResponse(sd.getId(), sd.getSeatType().name(), sd.getPrice()))
                 .collect(Collectors.toList());
 
-        List<SeatItemResponse> seatDtos = seatPage.getContent().stream()
-                .map(seat -> new SeatItemResponse(seat.getId(), seat.getSeatNumber(), seat.getSeatDetail().getId()))
+        List<SeatItemResponse> seatItems = seatPage.getContent().stream()
+                .map(seat -> new SeatItemResponse(seat.getId(), seat.getSeatNumber(),
+                        seat.getSeatDetail() != null ? seat.getSeatDetail().getId() : null))
                 .collect(Collectors.toList());
 
         return new SeatResponse(
                 new ConcertResponse(concert.getId(), concert.getConcertName(), concert.getConcertDate(), concert.getTicketingDate(), concert.getMaxTicketPerUser()),
-                seatDetailDtos,
-                new SeatPageResponse(page, pageSize, seatPage.getTotalElements(), seatPage.getTotalPages(), seatDtos)
+                seatDetailResponses,
+                new SeatPageResponse(page, pageSize, seatPage.getTotalElements(), seatPage.getTotalPages(), seatItems)
         );
     }
 }
