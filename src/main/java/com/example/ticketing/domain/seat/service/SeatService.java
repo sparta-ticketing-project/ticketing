@@ -5,7 +5,6 @@ import com.example.ticketing.domain.seat.dto.response.*;
 import com.example.ticketing.domain.seat.entity.Seat;
 import com.example.ticketing.domain.seat.entity.SeatDetail;
 import com.example.ticketing.domain.concert.repository.ConcertRepository;
-import com.example.ticketing.domain.seat.repository.SeatDetailRepository;
 import com.example.ticketing.domain.seat.repository.SeatRepository;
 import com.example.ticketing.global.exception.CustomException;
 import com.example.ticketing.global.exception.ExceptionType;
@@ -16,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class SeatService {
     private final SeatRepository seatRepository;
     private final ConcertRepository concertRepository;
-    private final SeatDetailRepository seatDetailRepository;
+
 
     @Transactional(readOnly = true)
     public SeatResponse getSeats(Long concertId, int page, int pageSize) {
@@ -35,9 +35,11 @@ public class SeatService {
         }
 
         Page<Seat> seatPage = seatRepository.findByConcertId(concertId, PageRequest.of(page - 1, pageSize));
-        List<SeatDetail> seatDetails = seatDetailRepository.findByConcertId(concertId);
 
-        List<SeatDetailResponse> seatDetailResponses = seatDetails.stream()
+        List<SeatDetailResponse> seatDetailResponses = seatPage.getContent().stream()
+                .map(Seat::getSeatDetail)
+                .filter(Objects::nonNull)
+                .distinct()
                 .map(sd -> SeatDetailResponse.builder()
                             .id(sd.getId())
                             .seatType(sd.getSeatType().name())

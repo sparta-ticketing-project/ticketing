@@ -16,6 +16,7 @@ import java.util.Optional;
 @Repository
 public interface SeatRepository extends JpaRepository<Seat, Long> {
 
+    @EntityGraph(attributePaths = {"seatDetail"})
     Page<Seat> findByConcertId(Long concertId, Pageable pageable);
     @Query("SELECT s FROM Seat s WHERE s.seatDetail.id = :seatDetailId AND s.seatNumber IN :seatNumbers")
     List<Seat> findBySeatDetailIdAndSeatNumberIn(@Param("seatDetailId") Long seatDetailId, @Param("seatNumbers") List<Integer> seatNumbers);
