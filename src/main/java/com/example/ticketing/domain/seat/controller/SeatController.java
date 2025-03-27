@@ -1,5 +1,6 @@
 package com.example.ticketing.domain.seat.controller;
 
+import com.example.ticketing.domain.seat.dto.response.SeatItemDetailResponse;
 import com.example.ticketing.domain.seat.dto.response.SeatResponse;
 import com.example.ticketing.domain.seat.service.SeatService;
 import com.example.ticketing.global.exception.CustomException;
@@ -27,6 +28,13 @@ public class SeatController {
         }
 
         SeatResponse response = seatService.getSeats(concertId, page, pageSize);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{seatId}")
+    public ResponseEntity<SeatItemDetailResponse> getSeat(@PathVariable Long concertId,
+                                                          @PathVariable Long seatId) {
+        SeatItemDetailResponse response = seatService.getSeat(concertId, seatId);
         return ResponseEntity.ok(response);
     }
 }

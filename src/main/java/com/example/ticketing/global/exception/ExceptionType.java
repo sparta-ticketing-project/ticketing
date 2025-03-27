@@ -60,6 +60,10 @@ public enum ExceptionType {
     INVALID_PAGE_NUMBER(HttpStatus.BAD_REQUEST, "페이지 번호는 1 이상이어야 합니다."),
     INVALID_PAGE_SIZE(HttpStatus.BAD_REQUEST, "페이지 크기는 1 이상 100 이하여야 합니다."),
 
+    SEAT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 좌석을 찾을 수 없습니다."),
+    CONCERT_SEAT_MISMATCH(HttpStatus.BAD_REQUEST, "해당 콘서트의 좌석이 아닙니다."),
+    SEAT_DETAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "좌석 상세 정보를 찾을 수 없습니다."),
+
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 문제가 발생했습니다."),
 
     SAME_AS_OLD_PASSWORD(HttpStatus.CONFLICT, "기존 비밀번호와 새 비밀번호가 같으면 안 됩니다."),
