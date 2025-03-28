@@ -6,8 +6,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SeatDetailResponse {
-    private Long id;
+public class SeatPageDataResponse {
+    private Long seatId;
+    private boolean isAvailable;
+    private int seatNumber;
     private String seatType;
     private int price;
 }

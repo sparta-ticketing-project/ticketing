@@ -1,40 +1,32 @@
 package com.example.ticketing.domain.seat.controller;
 
-import com.example.ticketing.domain.seat.dto.response.SeatItemDetailResponse;
-import com.example.ticketing.domain.seat.dto.response.SeatResponse;
+import com.example.ticketing.domain.seat.dto.response.SeatOneResponse;
+import com.example.ticketing.domain.seat.dto.response.SeatPageResponse;
 import com.example.ticketing.domain.seat.service.SeatService;
-import com.example.ticketing.global.exception.CustomException;
-import com.example.ticketing.global.exception.ExceptionType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/concerts/{concertId}/seats")
 @RequiredArgsConstructor
 public class SeatController {
     private final SeatService seatService;
 
-    @GetMapping
-    public ResponseEntity<SeatResponse> getSeats(@PathVariable Long concertId,
-                                                 @RequestParam(defaultValue = "1") int page,
-                                                 @RequestParam(defaultValue = "20") int pageSize) {
-
-        if (page < 1) {
-            throw new CustomException(ExceptionType.INVALID_PAGE_NUMBER);
-        }
-        if (pageSize < 1 || pageSize > 100) {
-            throw new CustomException(ExceptionType.INVALID_PAGE_SIZE);
-        }
-
-        SeatResponse response = seatService.getSeats(concertId, page, pageSize);
-        return ResponseEntity.ok(response);
+    @GetMapping("/api/v1/concerts/{concertId}/seats")
+    public ResponseEntity<SeatPageResponse> getSeats(
+            @PathVariable Long concertId,
+            @RequestParam int page,
+            @RequestParam int pageSize,
+            @RequestParam(required = false) Long seatDetailId // seatDetailId를 선택적으로 받음
+    ) {
+        SeatPageResponse seatPageResponse = seatService.getSeats(concertId, page, pageSize, seatDetailId);
+        return ResponseEntity.ok(seatPageResponse);
     }
 
-    @GetMapping("/{seatId}")
-    public ResponseEntity<SeatItemDetailResponse> getSeat(@PathVariable Long concertId,
-                                                          @PathVariable Long seatId) {
-        SeatItemDetailResponse response = seatService.getSeat(concertId, seatId);
+    @GetMapping("/api/v1/concerts/{concertId}/seats/{seatId}")
+    public ResponseEntity<SeatOneResponse> getSeat(@PathVariable Long concertId,
+                                                   @PathVariable Long seatId) {
+        SeatOneResponse response = seatService.getSeat(concertId, seatId);
         return ResponseEntity.ok(response);
     }
 }
