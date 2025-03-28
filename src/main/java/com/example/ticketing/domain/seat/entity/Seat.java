@@ -9,7 +9,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "seats", indexes = @Index(name = "idx_seat_details_id", columnList = "seat_details_id"))
+@Table(
+        name = "seats",
+        indexes = {
+                @Index(name = "idx_seat_details_id", columnList = "seat_details_id"),
+                @Index(name = "idx_seat_number", columnList = "seat_number") // seatNumber 인덱스 추가!
+        }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Seat extends BaseTimeEntity {

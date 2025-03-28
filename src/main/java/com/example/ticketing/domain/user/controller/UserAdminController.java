@@ -60,10 +60,9 @@ public class UserAdminController {
     // 콘서트 상세 조회
     @GetMapping("/api/v1/admin/concerts/{concertId}")
     public ResponseEntity<ConcertResponse> getConcert(
-            @Auth AuthUser authUser,
             @PathVariable Long concertId
     ) {
-        ConcertResponse concert = userAdminService.getConcert(authUser, concertId);
+        ConcertResponse concert = userAdminService.getConcert(concertId);
         return ResponseEntity.ok(concert);
     }
 
@@ -116,10 +115,9 @@ public class UserAdminController {
     // 티켓 예매율 By Gender
     @GetMapping("/api/v1/admin/concerts/{concertId}/booking-rate-by-gender")
     public ResponseEntity<GenderBookingRateResponse> bookingRateByGender(
-            @Auth AuthUser authUser,
             @PathVariable Long concertId
     ) {
-        GenderBookingRateResponse result = userAdminService.bookingRateByGender(authUser, concertId);
+        GenderBookingRateResponse result = userAdminService.bookingRateByGender(concertId);
         return ResponseEntity.ok(result);
     }
 }

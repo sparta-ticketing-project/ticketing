@@ -38,6 +38,7 @@ public enum ExceptionType {
 
     CONCERT_DELETION_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "사용가능한 티켓이 존재하여 콘서트 삭제 불가합니다."),
     CONCERT_MODIFICATION_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "예매시간 이후에 수정할 수 없습니다."),
+    SEAT_UPDATE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "본인이 생성한 콘서트의 좌석만 수정할 수 있습니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 문제가 발생했습니다."),
 

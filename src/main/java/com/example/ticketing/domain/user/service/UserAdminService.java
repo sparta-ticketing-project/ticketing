@@ -62,15 +62,15 @@ public class UserAdminService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @AdminOnly
     @Transactional
     public ConcertResponse createConcert(AuthUser authUser, String concertName, LocalDateTime concertDate, LocalDateTime ticketingDate, String concertType, int maxTicketPerUser, List<SeatDetailRequest> seatDetail) {
-
-        IsTicketingDateBeforeConcertDate(ticketingDate, concertDate);
 
         User user = userRepository.findById(authUser.getUserId()).orElseThrow(
                 () -> new CustomException(ExceptionType.USER_NOT_FOUND)
         );
+
+
+        IsTicketingDateBeforeConcertDate(ticketingDate, concertDate);
 
         // Concert 생성
         Concert concert = Concert.builder()
@@ -149,7 +149,6 @@ public class UserAdminService {
         );
     }
 
-    @AdminOnly
     @Transactional
     public ConcertResponse updateConcert(AuthUser authUser, Long concertId, String concertName, LocalDateTime concertDate, LocalDateTime ticketingDate, String concertType, int maxTicketPerUser, List<UpdateConcertSeatDetailRequest> updateSeatDetailRequest) {
 
@@ -204,13 +203,17 @@ public class UserAdminService {
 
     }
 
-    @AdminOnly
     @Transactional
     public UpdatedSeatResponse updateSeats(AuthUser authUser, Long concertId, Long seatDetailId, UpdateSeatRequest dto) {
 
         Concert concert = concertRepository.findById(concertId).orElseThrow(
                 () -> new CustomException(ExceptionType.CONCERT_NOT_FOUND)
         );
+
+        // 자신이 생성한 콘서트의 좌석만 수정할 수 있도록
+        if (concert.getUser().getId() != authUser.getUserId()) {
+            throw new CustomException(ExceptionType.SEAT_UPDATE_NOT_ALLOWED);
+        }
 
         IsNowBeforeTicketingDate(LocalDateTime.now(), concert.getTicketingDate());
 
@@ -248,7 +251,6 @@ public class UserAdminService {
 
     }
 
-    @AdminOnly
     @Transactional(readOnly = true)
     public Page<ConcertResponse> getConcerts(AuthUser authUser, int page, int size) {
 
@@ -290,9 +292,8 @@ public class UserAdminService {
         return result;
     }
 
-    @AdminOnly
     @Transactional(readOnly = true)
-    public ConcertResponse getConcert(AuthUser authUser, Long concertId) {
+    public ConcertResponse getConcert(Long concertId) {
         Concert concert = concertRepository.findById(concertId).orElseThrow(
                 () -> new CustomException(ExceptionType.CONCERT_NOT_FOUND)
         );
@@ -318,7 +319,6 @@ public class UserAdminService {
         );
     }
 
-    @AdminOnly
     @Transactional
     public void deleteConcert(AuthUser authUser, Long concertId) {
         Concert concert = concertRepository.findById(concertId).orElseThrow(
@@ -343,9 +343,8 @@ public class UserAdminService {
 
     }
 
-    @AdminOnly
     @Transactional(readOnly = true)
-    public GenderBookingRateResponse bookingRateByGender(AuthUser authUser, Long concertId) {
+    public GenderBookingRateResponse bookingRateByGender(Long concertId) {
 
         Concert concert = concertRepository.findById(concertId).orElseThrow(
                 () -> new CustomException(ExceptionType.CONCERT_NOT_FOUND)
@@ -392,6 +391,7 @@ public class UserAdminService {
     }
 
     public void seatBatchInsert(List<Seat> seats) {
+        System.out.println("seatBatchInsert 실행됨!");
 
         int batchSize = 1000;
         String sql = "INSERT INTO seats (concert_id, seat_details_id, seat_number, is_available, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ?)";
