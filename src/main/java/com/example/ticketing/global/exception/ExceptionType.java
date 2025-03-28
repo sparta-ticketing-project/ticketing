@@ -44,10 +44,8 @@ public enum ExceptionType {
     SEAT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 좌석을 찾을 수 없습니다."),
     NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND, "해당 토큰을 찾을 수 없습니다."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문을 찾을 수 없습니다."),
-    CONCERT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 콘서트를 찾을 수 없습니다."),
     SEAT_DETAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 SeatDeatail을 찾을 수 없습니다."),
     SEAT_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 SeatType을 찾을 수 없습니다."),
-    SEAT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 Seat를 찾을 수 없습니다"),
 
     INVALID_CONCERT_TYPE(HttpStatus.BAD_REQUEST, "유효하지 않은 콘서트 타입입니다."),
     INVALID_SEAT_TYPE(HttpStatus.BAD_REQUEST, "유효하지 않은 좌석 타입입니다."),

@@ -90,7 +90,7 @@ public class TicketService {
 
     private void validateAllSeatsAreAvailable(List<Seat> seats) {
         for (Seat seat : seats) {
-            if (!seat.isAvailable()) {
+            if (!seat.getIsAvailable()) {
                 throw new CustomException(ExceptionType.ORDER_SEAT_ALREADY_TAKEN);
             }
         }
