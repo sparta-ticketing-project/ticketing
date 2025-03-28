@@ -15,10 +15,11 @@ public class ConcertSingleResponse {
     private final LocalDateTime ticketingDate;
     private final Integer totalSeatCount;
     private final Integer availableSeatCount;
+    private final Long viewCount;
     private final List<ConcertSeatDetailResponse> concertSeatDetailResponses;
 
     @Builder
-    public ConcertSingleResponse(Long id, String concertName, String concertType, LocalDateTime concertDate, LocalDateTime ticketingDate, Integer totalSeatCount, Integer availableSeatCount, List<ConcertSeatDetailResponse> concertSeatDetailResponses) {
+    public ConcertSingleResponse(Long id, String concertName, String concertType, LocalDateTime concertDate, LocalDateTime ticketingDate, Integer totalSeatCount, Integer availableSeatCount, Long viewCount, List<ConcertSeatDetailResponse> concertSeatDetailResponses) {
         this.id = id;
         this.concertName = concertName;
         this.concertType = concertType;
@@ -26,6 +27,7 @@ public class ConcertSingleResponse {
         this.ticketingDate = ticketingDate;
         this.totalSeatCount = totalSeatCount;
         this.availableSeatCount = availableSeatCount;
+        this.viewCount = viewCount;
         this.concertSeatDetailResponses = concertSeatDetailResponses;
     }
 }
