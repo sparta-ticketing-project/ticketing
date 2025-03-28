@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Repository
@@ -32,6 +33,20 @@ public class ConcertRedisRepository {
         Duration ttl = getDuration();
 
         redisTemplate.opsForValue().set(concertId.toString(), concertName, ttl);
+    }
+
+    public void updateConcertName(Long concertId, String concertName){
+
+        String key = concertId.toString();
+
+        Long ttl = redisTemplate.getExpire(key, TimeUnit.SECONDS);
+
+        if (ttl != null && ttl > 0) {
+            redisTemplate.opsForValue().set(key, concertName, ttl, TimeUnit.SECONDS);
+        } else {
+            redisTemplate.opsForValue().set(key, concertName);
+        }
+
     }
 
 

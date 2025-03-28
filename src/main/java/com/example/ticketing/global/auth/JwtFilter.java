@@ -25,6 +25,11 @@ public class JwtFilter implements Filter {
             "POST", new String[]{
                     "/api/v1/auth/signup",
                     "/api/v1/auth/login"
+            },
+            "GET", new String[]{
+                    "/api/v1/concerts/popular",
+                    "/api/v2/concerts/popular",
+                    "/api/v1/concerts"
             }
     );
 
