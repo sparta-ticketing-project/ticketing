@@ -34,19 +34,17 @@ public class Seat extends BaseTimeEntity {
 
     private Boolean isAvailable;
 
-    public void setAvailable(Boolean available) {
-        isAvailable = available;
-    }
-
-    private Integer seatNumber;
+    private int seatNumber;
 
     @Builder
     public Seat (
+            Long id,
             Concert concert,
             SeatDetail seatDetail,
             boolean isAvailable,
             int seatNumber
     ) {
+        this.id = id;
         this.concert = concert;
         this.seatDetail = seatDetail;
         this.isAvailable = isAvailable;

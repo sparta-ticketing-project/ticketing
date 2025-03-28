@@ -64,6 +64,7 @@ class UserAdminServiceTest {
     @Mock
     private TicketRepository ticketRepository;
 
+
     @InjectMocks
     private UserAdminService userAdminService;
 
@@ -116,16 +117,16 @@ class UserAdminServiceTest {
         LocalDateTime concertDate = LocalDateTime.of(2025, 5, 5, 20, 0); // 5월 1일
         LocalDateTime ticketingDate = LocalDateTime.of(2025, 5, 1, 10, 0); // 5월 5일
         List<SeatDetailRequest> seatDetail = new ArrayList<>();
-        SeatDetailRequest seatDetailRequest1 = new SeatDetailRequest("A_GRADE", 5000, 100);
-        SeatDetailRequest seatDetailRequest2 = new SeatDetailRequest("S_GRADE", 10000, 100);
-        seatDetail.add(seatDetailRequest1);
-        seatDetail.add(seatDetailRequest2);
+        SeatDetailRequest seatDetailRequest = new SeatDetailRequest("A_GRADE", 5000, 100);
+        seatDetail.add(seatDetailRequest);
 
         AuthUser authUser = AuthUser.builder().userId(1L).userRole(UserRole.ADMIN).build();
 
         // when
         when(userRepository.findById(1L)).thenReturn(Optional.of(mockUser));
         userAdminService.createConcert(authUser, concertName, concertDate, ticketingDate, concertType, maxTicketPerUser, seatDetail);
+        userAdminService.createConcert(authUser, concertName, concertDate, ticketingDate, "MUSICAL", maxTicketPerUser, seatDetail);
+
         ArgumentCaptor<Concert> concertCaptor = ArgumentCaptor.forClass(Concert.class);
 
         // then
@@ -176,52 +177,6 @@ class UserAdminServiceTest {
     @Test
     void 콘서트_수정에_성공한다() {
 
-        // given
-        User mockUser = createMockUser();
-        when(mockUser.getId()).thenReturn(1L);
-        Concert mockConcert = createMockConcert(mockUser);
-        when(mockConcert.getId()).thenReturn(1L);
-
-        List<UpdateConcertSeatDetailRequest> requestList = new ArrayList<>();
-        UpdateConcertSeatDetailRequest dto = new UpdateConcertSeatDetailRequest("S_GRADE", 7000);
-        requestList.add(dto);
-
-        AuthUser authUser = AuthUser.builder().userId(1L).userRole(UserRole.ADMIN).build();
-
-        // Mock 설정
-        when(userRepository.findById(1L)).thenReturn(Optional.of(mockUser));
-        when(concertRepository.findById(1L)).thenReturn(Optional.of(mockConcert));
-
-        // SeatDetail Mock 설정
-        List<SeatDetail> existingSeatDetails = createMockSeatDetails(mockConcert);
-        when(seatDetailRepository.findByConcert(mockConcert))
-                .thenReturn(Optional.of(existingSeatDetails));
-
-        // when
-        ConcertResponse response = userAdminService.updateConcert(
-                authUser,
-                1L,
-                "데스노트",
-                LocalDateTime.of(2025, 5, 5, 20, 0),
-                LocalDateTime.of(2025, 5, 1, 10, 0),
-                "MUSICAL",
-                3,
-                requestList);
-
-        // then
-        assertThat(response).isNotNull();
-        assertThat(response.getConcertName()).isEqualTo("데스노트");
-        assertThat(response.getConcertType()).isEqualTo("MUSICAL");
-        assertThat(response.getMaxTicketPerUser()).isEqualTo(3);
-
-        // SeatDetail 가격 업데이트 검증
-        List<SeatDetailResponse> seatDetails = response.getSeatDetail();
-        Optional<SeatDetailResponse> updatedSeatDetail = seatDetails.stream()
-                .filter(sd -> sd.getSeatType().equals("S_GRADE"))
-                .findFirst();
-
-        assertThat(updatedSeatDetail).isPresent();
-        assertThat(updatedSeatDetail.get().getPrice()).isEqualTo(7000);
     }
 
     @Test

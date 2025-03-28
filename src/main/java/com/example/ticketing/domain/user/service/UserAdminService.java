@@ -65,12 +65,11 @@ public class UserAdminService {
     @Transactional
     public ConcertResponse createConcert(AuthUser authUser, String concertName, LocalDateTime concertDate, LocalDateTime ticketingDate, String concertType, int maxTicketPerUser, List<SeatDetailRequest> seatDetail) {
 
+        IsTicketingDateBeforeConcertDate(ticketingDate, concertDate);
+
         User user = userRepository.findById(authUser.getUserId()).orElseThrow(
                 () -> new CustomException(ExceptionType.USER_NOT_FOUND)
         );
-
-
-        IsTicketingDateBeforeConcertDate(ticketingDate, concertDate);
 
         // Concert 생성
         Concert concert = Concert.builder()
@@ -293,7 +292,7 @@ public class UserAdminService {
     }
 
     @Transactional(readOnly = true)
-    public ConcertResponse getConcert(Long concertId) {
+    public ConcertResponse getConcert(AuthUser authUser, Long concertId) {
         Concert concert = concertRepository.findById(concertId).orElseThrow(
                 () -> new CustomException(ExceptionType.CONCERT_NOT_FOUND)
         );

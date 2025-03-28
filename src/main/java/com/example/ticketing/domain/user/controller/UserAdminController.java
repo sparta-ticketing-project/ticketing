@@ -60,9 +60,10 @@ public class UserAdminController {
     // 콘서트 상세 조회
     @GetMapping("/api/v1/admin/concerts/{concertId}")
     public ResponseEntity<ConcertResponse> getConcert(
+            @Auth AuthUser authUser,
             @PathVariable Long concertId
     ) {
-        ConcertResponse concert = userAdminService.getConcert(concertId);
+        ConcertResponse concert = userAdminService.getConcert(authUser, concertId);
         return ResponseEntity.ok(concert);
     }
 
