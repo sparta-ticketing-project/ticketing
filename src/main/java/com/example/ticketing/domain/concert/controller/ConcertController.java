@@ -2,6 +2,8 @@ package com.example.ticketing.domain.concert.controller;
 
 import com.example.ticketing.domain.concert.dto.response.*;
 import com.example.ticketing.domain.concert.service.ConcertService;
+import com.example.ticketing.global.auth.Auth;
+import com.example.ticketing.global.dto.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,9 +33,9 @@ public class ConcertController {
         return ResponseEntity.ok(concertService.findPopularConcertsV2(limit));
     }
 
-    @GetMapping("/v1/concerts/{concertId}/users/{userId}")
-    public ResponseEntity<ConcertSingleResponse> findSingleConcert(@PathVariable Long concertId, @PathVariable Long userId){
-        return ResponseEntity.ok(concertService.findSingleConcert(userId, concertId));
+    @GetMapping("/v1/concerts/{concertId}")
+    public ResponseEntity<ConcertSingleResponse> findSingleConcert(@Auth AuthUser authUser, @PathVariable Long concertId){
+        return ResponseEntity.ok(concertService.findSingleConcert(authUser.getUserId(), concertId));
     }
 
     @GetMapping("/v1/concerts")

@@ -22,16 +22,24 @@ public class ConcertRedisRepository {
 
     private static final String RANKING = "ranking";
 
-    public void incrementViewCount(Long concertId, String concertName){
-        String member = concertId + ":" + concertName;
-        redisTemplate.opsForZSet().incrementScore(RANKING, member, 1);
+    public void incrementViewCount(Long concertId){
+        redisTemplate.opsForZSet().incrementScore(RANKING, String.valueOf(concertId), 1);
     }
+
+    public void cacheConcertName(Long concertId, String concertName){
+
+        // 자정까지 남은 시간 계산
+        Duration ttl = getDuration();
+
+        redisTemplate.opsForValue().set(concertId.toString(), concertName, ttl);
+    }
+
 
     public boolean isFirstView(Long userId, Long concertId){
         String key = userId + ":" + concertId;
 
         // 자정까지 남은 시간 계산
-        Duration ttl = Duration.between(LocalDateTime.now(), LocalDate.now().plusDays(1).atStartOfDay());
+        Duration ttl = getDuration();
 
         Boolean isNew = redisTemplate.opsForValue().setIfAbsent(key, "1", ttl);
 
@@ -49,14 +57,31 @@ public class ConcertRedisRepository {
 
         int rankCount = 1;
         for(ZSetOperations.TypedTuple<Object> tuple : typedTuples){
-            concertRedisRankResponses.add(ConcertRedisRankResponse.of(tuple, rankCount++));
+
+            String concertName = redisTemplate.opsForValue().get(tuple.getValue()).toString();
+
+            ConcertRedisRankResponse concertRedisRankResponse = ConcertRedisRankResponse.builder()
+                    .rank(rankCount++)
+                    .concertName(concertName)
+                    .concertId(Long.parseLong(tuple.getValue().toString()))
+                    .viewCount(tuple.getScore().longValue())
+                    .build();
+
+            concertRedisRankResponses.add(concertRedisRankResponse);
+
         }
 
         return concertRedisRankResponses;
     }
 
     @Scheduled(cron = "0 0 0 * * *")
+    //@Scheduled(fixedRate = 60000)
     public void resetViewRanking(){
         redisTemplate.delete(RANKING);
+    }
+
+    private Duration getDuration() {
+        Duration ttl = Duration.between(LocalDateTime.now(), LocalDate.now().plusDays(1).atStartOfDay());
+        return ttl;
     }
 }

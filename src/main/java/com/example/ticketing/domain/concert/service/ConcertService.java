@@ -55,7 +55,6 @@ public class ConcertService {
         return new PageImpl<>(concertRankResponses, concerts.getPageable(), concerts.getTotalElements());
     }
 
-
     public List<ConcertRedisRankResponse> findPopularConcertsV2(Integer limit){
         return concertRedisRepository.getRankList(limit);
     }
@@ -66,7 +65,8 @@ public class ConcertService {
         Concert concert = concertRepository.findById(concertId).orElseThrow(() -> new CustomException(ExceptionType.CONCERT_NOT_FOUND));
 
         if(concertRedisRepository.isFirstView(userId, concertId)){
-            concertRedisRepository.incrementViewCount(concertId, concert.getConcertName());
+            concertRedisRepository.incrementViewCount(concertId);
+            concertRedisRepository.cacheConcertName(concertId, concert.getConcertName());
             concert.increaseViewCount();
         }
 
