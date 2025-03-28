@@ -59,12 +59,6 @@ public class User extends BaseTimeEntity {
         this.deleted = false;
     }
 
-    public void update(String email, String username, Integer age) {
-        this.email = email;
-        this.username = username;
-        this.age = age;
-    }
-
     public void update(String username, Gender gender, Integer age) {
         this.username = username;
         this.gender = gender;
