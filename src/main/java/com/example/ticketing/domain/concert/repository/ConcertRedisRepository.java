@@ -35,7 +35,7 @@ public class ConcertRedisRepository {
         redisTemplate.opsForValue().set(concertId.toString(), concertName, ttl);
     }
 
-    public void updateConcertName(Long concertId, String concertName){
+    public void setConcertName(Long concertId, String concertName){
 
         String key = concertId.toString();
 
