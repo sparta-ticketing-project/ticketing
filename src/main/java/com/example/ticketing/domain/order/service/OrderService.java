@@ -3,6 +3,7 @@ package com.example.ticketing.domain.order.service;
 import com.example.ticketing.domain.concert.entity.Concert;
 import com.example.ticketing.domain.concert.repository.ConcertRepository;
 import com.example.ticketing.domain.order.dto.request.CreateOrderRequest;
+import com.example.ticketing.domain.order.dto.response.CancelOrderResponse;
 import com.example.ticketing.domain.order.dto.response.CreateOrderResponse;
 import com.example.ticketing.domain.order.dto.response.OrderListResponse;
 import com.example.ticketing.domain.order.dto.response.OrderResponse;
@@ -90,6 +91,44 @@ public class OrderService {
 
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber()-1, pageable.getPageSize());
         return orderRepository.findOrdersBy(user, orderStatus, pageRequest);
+    }
+
+    @Transactional
+    public CancelOrderResponse cancelOrder(Long userId, Long orderId) {
+        User user = getUserById(userId);
+        Order order = getOrderById(orderId);
+
+        checkBeforeCancelOrder(user, order);
+
+        ticketService.cancelTickets(order);
+
+        order.updateOrderStatus(OrderStatus.CANCELED);
+        refundUserPoint(user, order.getTotalPrice());
+
+        return CancelOrderResponse.from(order);
+    }
+
+    private void checkBeforeCancelOrder(User user, Order order) {
+        validateOrderOwner(user, order);
+        validateOrderNotCanceled(order);
+        validateConcertNotStarted(order.getConcert());
+    }
+
+    private void validateOrderNotCanceled(Order order) {
+        if (OrderStatus.CANCELED.equals(order.getOrderStatus())) {
+            throw new CustomException(ExceptionType.ORDER_INVALID_REQUEST, "이미 취소된 주문입니다.");
+        }
+    }
+
+    private void validateConcertNotStarted(Concert concert) {
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isAfter(concert.getConcertDate())) {
+            throw new CustomException(ExceptionType.ORDER_INVALID_REQUEST, "콘서트 시작 후 주문을 취소할 수 없습니다.");
+        }
+    }
+
+    private void refundUserPoint(User user, int amount) {
+        user.addPoint(amount);
     }
 
     private void validateConcertDate(LocalDateTime concertDate) {

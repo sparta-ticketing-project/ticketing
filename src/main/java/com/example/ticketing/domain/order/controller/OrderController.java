@@ -1,6 +1,7 @@
 package com.example.ticketing.domain.order.controller;
 
 import com.example.ticketing.domain.order.dto.request.CreateOrderRequest;
+import com.example.ticketing.domain.order.dto.response.CancelOrderResponse;
 import com.example.ticketing.domain.order.dto.response.CreateOrderResponse;
 import com.example.ticketing.domain.order.dto.response.OrderListResponse;
 import com.example.ticketing.domain.order.dto.response.OrderResponse;
@@ -47,4 +48,11 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrders(userId, orderStatus, pageable));
     }
 
+    @DeleteMapping("/v1/orders/{orderId}")
+    public ResponseEntity<CancelOrderResponse> cancelOrder (
+            @RequestParam Long userId,
+            @PathVariable Long orderId
+    ) {
+        return ResponseEntity.ok(orderService.cancelOrder(userId, orderId));
+    }
 }

@@ -34,7 +34,7 @@ public class Ticket extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seat_id")
     private Seat seat;
 
@@ -51,5 +51,9 @@ public class Ticket extends BaseTimeEntity {
         this.seat = seat;
         this.price = price;
         this.ticketStatus = ticketStatus;
+    }
+
+    public void markAsUnavailable() {
+        this.ticketStatus = TicketStatus.UNAVAILABLE;
     }
 }
