@@ -1,5 +1,6 @@
 package com.example.ticketing.domain.user.service;
 
+import com.example.ticketing.aop.AdminOnly;
 import com.example.ticketing.domain.concert.entity.Concert;
 import com.example.ticketing.domain.concert.enums.ConcertType;
 import com.example.ticketing.domain.concert.repository.ConcertRepository;
@@ -17,7 +18,10 @@ import com.example.ticketing.domain.user.dto.request.UpdateSeatRequest;
 import com.example.ticketing.domain.user.dto.response.*;
 import com.example.ticketing.domain.user.entity.User;
 import com.example.ticketing.domain.user.enums.Gender;
+import com.example.ticketing.domain.user.enums.UserRole;
 import com.example.ticketing.domain.user.repository.UserRepository;
+import com.example.ticketing.global.auth.Auth;
+import com.example.ticketing.global.dto.AuthUser;
 import com.example.ticketing.global.exception.CustomException;
 import com.example.ticketing.global.exception.ExceptionType;
 import jakarta.persistence.EntityManager;
@@ -58,15 +62,15 @@ public class UserAdminService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @AdminOnly
     @Transactional
-    public ConcertResponse createConcert(Long userId, String concertName, LocalDateTime concertDate, LocalDateTime ticketingDate, String concertType, int maxTicketPerUser, List<SeatDetailRequest> seatDetail) {
+    public ConcertResponse createConcert(AuthUser authUser, String concertName, LocalDateTime concertDate, LocalDateTime ticketingDate, String concertType, int maxTicketPerUser, List<SeatDetailRequest> seatDetail) {
 
         IsTicketingDateBeforeConcertDate(ticketingDate, concertDate);
 
-        User user = userRepository.findById(userId).orElseThrow(
+        User user = userRepository.findById(authUser.getUserId()).orElseThrow(
                 () -> new CustomException(ExceptionType.USER_NOT_FOUND)
         );
-
 
         // Concert 생성
         Concert concert = Concert.builder()
@@ -145,15 +149,16 @@ public class UserAdminService {
         );
     }
 
+    @AdminOnly
     @Transactional
-    public ConcertResponse updateConcert(Long userId, Long concertId, String concertName, LocalDateTime concertDate, LocalDateTime ticketingDate, String concertType, int maxTicketPerUser, List<UpdateConcertSeatDetailRequest> updateSeatDetailRequest) {
+    public ConcertResponse updateConcert(AuthUser authUser, Long concertId, String concertName, LocalDateTime concertDate, LocalDateTime ticketingDate, String concertType, int maxTicketPerUser, List<UpdateConcertSeatDetailRequest> updateSeatDetailRequest) {
 
         Concert concert = concertRepository.findById(concertId).orElseThrow(
                 () -> new CustomException(ExceptionType.CONCERT_NOT_FOUND)
         );
 
         // 본인이 생성하지 않은 콘서트일 경우 예외발생
-        if (concert.getUser().getId() != userId) {
+        if (concert.getUser().getId() != authUser.getUserId()) {
             throw new CustomException(ExceptionType.NO_PERMISSION_ACTION);
         }
 
@@ -199,10 +204,15 @@ public class UserAdminService {
 
     }
 
+    @AdminOnly
     @Transactional
-    public UpdatedSeatResponse updateSeats(Long concertId, Long seatDetailId, UpdateSeatRequest dto) {
+    public UpdatedSeatResponse updateSeats(AuthUser authUser, Long concertId, Long seatDetailId, UpdateSeatRequest dto) {
 
-        // 만약 수정하려는 좌석의 id를 가진 ticket이 있다면 ticketStatus도 업데이트 해주어야 한다.
+        Concert concert = concertRepository.findById(concertId).orElseThrow(
+                () -> new CustomException(ExceptionType.CONCERT_NOT_FOUND)
+        );
+
+        IsNowBeforeTicketingDate(LocalDateTime.now(), concert.getTicketingDate());
 
         // 수정할 SeatNumber들이 담겨있는 리스트
         List<Integer> toChangeAvailableSeatNumberList = dto.getAvailableSeatList();
@@ -238,10 +248,11 @@ public class UserAdminService {
 
     }
 
+    @AdminOnly
     @Transactional(readOnly = true)
-    public Page<ConcertResponse> getConcerts(Long userId, int page, int size) {
+    public Page<ConcertResponse> getConcerts(AuthUser authUser, int page, int size) {
 
-        User user = userRepository.findById(userId).orElseThrow(
+        User user = userRepository.findById(authUser.getUserId()).orElseThrow(
                 () -> new CustomException(ExceptionType.USER_NOT_FOUND)
         );
 
@@ -279,8 +290,9 @@ public class UserAdminService {
         return result;
     }
 
+    @AdminOnly
     @Transactional(readOnly = true)
-    public ConcertResponse getConcert(Long concertId) {
+    public ConcertResponse getConcert(AuthUser authUser, Long concertId) {
         Concert concert = concertRepository.findById(concertId).orElseThrow(
                 () -> new CustomException(ExceptionType.CONCERT_NOT_FOUND)
         );
@@ -306,14 +318,15 @@ public class UserAdminService {
         );
     }
 
+    @AdminOnly
     @Transactional
-    public void deleteConcert(Long userId, Long concertId) {
+    public void deleteConcert(AuthUser authUser, Long concertId) {
         Concert concert = concertRepository.findById(concertId).orElseThrow(
                 () -> new CustomException(ExceptionType.CONCERT_NOT_FOUND)
         );
 
         // 본인이 생성한 콘서트만 삭제 가능해야한다.
-        if (concert.getUser().getId() != userId) {
+        if (concert.getUser().getId() != authUser.getUserId()) {
             throw new CustomException(ExceptionType.NO_PERMISSION_ACTION);
         }
 
@@ -330,8 +343,9 @@ public class UserAdminService {
 
     }
 
+    @AdminOnly
     @Transactional(readOnly = true)
-    public GenderBookingRateResponse bookingRateByGender(Long concertId) {
+    public GenderBookingRateResponse bookingRateByGender(AuthUser authUser, Long concertId) {
 
         Concert concert = concertRepository.findById(concertId).orElseThrow(
                 () -> new CustomException(ExceptionType.CONCERT_NOT_FOUND)
@@ -357,7 +371,7 @@ public class UserAdminService {
         }
     }
 
-    // Concert를 수정하려는 시점이 ticketingDate 이전이어야 한다.
+    // 수정하려는 시점이 ticketingDate 이전이어야 한다.
     void IsNowBeforeTicketingDate (LocalDateTime now, LocalDateTime ticketingDate) {
         if (!now.isBefore(ticketingDate)) {
             throw new CustomException(ExceptionType.CONCERT_MODIFICATION_NOT_ALLOWED);
