@@ -4,6 +4,7 @@ import com.example.ticketing.domain.concert.entity.Concert;
 import com.example.ticketing.domain.concert.repository.ConcertRepository;
 import com.example.ticketing.domain.order.dto.request.CreateOrderRequest;
 import com.example.ticketing.domain.order.dto.response.CreateOrderResponse;
+import com.example.ticketing.domain.order.dto.response.OrderListResponse;
 import com.example.ticketing.domain.order.dto.response.OrderResponse;
 import com.example.ticketing.domain.order.entity.Order;
 import com.example.ticketing.domain.order.enums.OrderStatus;
@@ -15,6 +16,9 @@ import com.example.ticketing.domain.user.repository.UserRepository;
 import com.example.ticketing.global.exception.CustomException;
 import com.example.ticketing.global.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +70,7 @@ public class OrderService {
 
         user.deductPoint(amount);
     }
+
     @Transactional(readOnly = true)
     public OrderResponse getOrder(Long userId, Long orderId) {
         User user = getUserById(userId);
@@ -77,6 +82,14 @@ public class OrderService {
         List<Ticket> tickets = ticketService.getTicketsByOrder(order);
 
         return OrderResponse.of(concert, order, tickets);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<OrderListResponse> getOrders(Long userId, OrderStatus orderStatus, Pageable pageable) {
+        User user = getUserById(userId);
+
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber()-1, pageable.getPageSize());
+        return orderRepository.findOrdersBy(user, orderStatus, pageRequest);
     }
 
     private void validateConcertDate(LocalDateTime concertDate) {
