@@ -9,9 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class SeatPageResponse {
-    private int page;
-    private int pageSize;
-    private long totalCount;
-    private int totalPages;
-    private List<SeatItemResponse> items;
+    private ConcertResponse concert;
+    private List<SeatPageDataResponse> seatPageDataResponses;
 }

@@ -10,12 +10,12 @@ import com.example.ticketing.global.exception.CustomException;
 import com.example.ticketing.global.exception.ExceptionType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +26,7 @@ public class SeatService {
 
 
     @Transactional(readOnly = true)
-    public SeatResponse getSeats(Long concertId, int page, int pageSize) {
+    public SeatPageResponse getSeats(Long concertId, int page, int pageSize, Long seatDetailId) {
         Concert concert = concertRepository.findById(concertId)
                 .orElseThrow(() -> new CustomException(ExceptionType.CONCERT_NOT_FOUND));
 
@@ -34,28 +34,29 @@ public class SeatService {
             throw new CustomException(ExceptionType.CONCERT_NOT_FOUND);
         }
 
-        Page<Seat> seatPage = seatRepository.findByConcertId(concertId, PageRequest.of(page - 1, pageSize));
+        Page<Seat> seatPage;
 
-        List<SeatDetailResponse> seatDetailResponses = seatPage.getContent().stream()
-                .map(Seat::getSeatDetail)
-                .filter(Objects::nonNull)
-                .distinct()
-                .map(sd -> SeatDetailResponse.builder()
-                            .id(sd.getId())
-                            .seatType(sd.getSeatType().name())
-                            .price(sd.getPrice())
-                            .build())
+        if (seatDetailId != null) {
+            // seatDetailId가 제공된 경우, 해당 seatDetailId를 기준으로 페이징
+            seatPage = seatRepository.findByConcertIdAndSeatDetailIdAndIsAvailableTrue(
+                    concertId, seatDetailId, PageRequest.of(page - 1, pageSize, Sort.by("seatNumber")));
+        } else {
+            // seatDetailId가 제공되지 않은 경우, 기존처럼 모든 좌석을 페이징
+            seatPage = seatRepository.findByConcertIdAndIsAvailableTrue(
+                    concertId, PageRequest.of(page - 1, pageSize, Sort.by("seatNumber")));
+        }
+
+        List<SeatPageDataResponse> seatPageDataResponses = seatPage.getContent().stream()
+                .map(seat -> SeatPageDataResponse.builder()
+                        .seatId(seat.getId())
+                        .isAvailable(seat.isAvailable())
+                        .seatNumber(seat.getSeatNumber())
+                        .seatType(seat.getSeatDetail().getSeatType().name())
+                        .price(seat.getSeatDetail().getPrice())
+                        .build())
                 .collect(Collectors.toList());
 
-        List<SeatItemResponse> seatItems = seatPage.getContent().stream()
-                .map(seat -> SeatItemResponse.builder()
-                            .seatId(seat.getId())
-                            .seatNumber(seat.getSeatNumber())
-                            .seatDetailId(seat.getSeatDetail() != null ? seat.getSeatDetail().getId() : null)
-                            .build())
-                .collect(Collectors.toList());
-
-        return SeatResponse.builder()
+        return SeatPageResponse.builder()
                 .concert(ConcertResponse.builder()
                         .concertId(concert.getId())
                         .concertName(concert.getConcertName())
@@ -63,19 +64,13 @@ public class SeatService {
                         .ticketingDate(concert.getTicketingDate())
                         .maxTicketPerUser(concert.getMaxTicketPerUser())
                         .build())
-                .seatDetails(seatDetailResponses)
-                .seats(SeatPageResponse.builder()
-                        .page(page)
-                        .pageSize(pageSize)
-                        .totalCount(seatPage.getTotalElements())
-                        .totalPages(seatPage.getTotalPages())
-                        .items(seatItems)
-                        .build())
+                .seatPageDataResponses(seatPageDataResponses)
                 .build();
+
     }
 
     @Transactional(readOnly = true)
-    public SeatItemDetailResponse getSeat(Long concertId, Long seatId) {
+    public SeatOneResponse getSeat(Long concertId, Long seatId) {
         Seat seat = seatRepository.findById(seatId)
                 .orElseThrow(() -> new CustomException(ExceptionType.SEAT_NOT_FOUND));
 
@@ -92,7 +87,7 @@ public class SeatService {
             throw new CustomException(ExceptionType.SEAT_DETAIL_NOT_FOUND);
         }
 
-        return SeatItemDetailResponse.builder()
+        return SeatOneResponse.builder()
                 .seatId(seat.getId())
                 .concertId(seat.getConcert().getId())
                 .seatDetailId(seatDetail.getId())

@@ -13,6 +13,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
+import java.util.Optional;
+
 @Repository
 public interface SeatRepository extends JpaRepository<Seat, Long> {
 
@@ -24,5 +26,11 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
     @EntityGraph(attributePaths = {"seatDetail", "concert"})
     @Query("SELECT s From Seat s WHERE s.id IN :seatIds")
     List<Seat> findAllWithSeatDetailAndConcertByIdIn(List<Long> seatIds);
+    Page<Seat> findByConcertIdAndIsAvailableTrue(Long concertId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"seatDetail"})
+    Page<Seat> findByConcertIdAndSeatDetailIdAndIsAvailableTrue(Long concertId, Long seatDetailId, Pageable pageable);
+
+    Optional<Seat> findById(Long seatId);
 
 }
