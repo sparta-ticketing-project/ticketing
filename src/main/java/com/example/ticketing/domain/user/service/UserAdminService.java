@@ -231,6 +231,7 @@ public class UserAdminService {
         seatBatchUpdate(toChangeUnavailableSeatList, false);
         updateAvailableSeatCount(toChangeUnavailableSeatList.size(), seatDetailId, concertId, "-");
 
+        entityManager.flush();
         // Seat가 업데이트 되기 전 캐시에 있던 List<Seat> 삭제
         entityManager.clear();
 

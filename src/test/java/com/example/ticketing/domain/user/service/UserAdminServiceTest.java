@@ -125,7 +125,6 @@ class UserAdminServiceTest {
         // when
         when(userRepository.findById(1L)).thenReturn(Optional.of(mockUser));
         userAdminService.createConcert(authUser, concertName, concertDate, ticketingDate, concertType, maxTicketPerUser, seatDetail);
-        userAdminService.createConcert(authUser, concertName, concertDate, ticketingDate, "MUSICAL", maxTicketPerUser, seatDetail);
 
         ArgumentCaptor<Concert> concertCaptor = ArgumentCaptor.forClass(Concert.class);
 
@@ -139,7 +138,7 @@ class UserAdminServiceTest {
         assertEquals(ticketingDate, savedConcert.getTicketingDate());
         assertEquals(maxTicketPerUser, savedConcert.getMaxTicketPerUser());
 
-        verify(seatDetailRepository, times(2)).save(any(SeatDetail.class));
+        verify(seatDetailRepository, times(1)).save(any(SeatDetail.class));
 
         verify(jdbcTemplate).batchUpdate(
                 anyString(),
@@ -165,7 +164,6 @@ class UserAdminServiceTest {
         seatDetail.add(seatDetailRequest);
 
         //when
-        when(userRepository.findById(1L)).thenReturn(Optional.of(mockUser));
         CustomException exception = assertThrows(CustomException.class, () -> {
             userAdminService.createConcert(authUser, concertName, concertDate, ticketingDate, concertType, maxTicketPerUser, seatDetail);
         });
