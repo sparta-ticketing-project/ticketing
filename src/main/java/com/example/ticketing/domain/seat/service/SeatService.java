@@ -51,7 +51,7 @@ public class SeatService {
                         .seatId(seat.getId())
                         .isAvailable(seat.isAvailable())
                         .seatNumber(seat.getSeatNumber())
-                        .seatType(seat.getSeatDetail().getSeatType().name())
+                        .seatType(seat.getSeatDetail().getSeatType())
                         .price(seat.getSeatDetail().getPrice())
                         .build())
                 .collect(Collectors.toList());
