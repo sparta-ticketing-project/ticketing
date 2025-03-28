@@ -1,5 +1,6 @@
 package com.example.ticketing.domain.seat.dto.response;
 
+import com.example.ticketing.domain.seat.enums.SeatType;
 import lombok.*;
 
 @Getter
@@ -10,6 +11,6 @@ public class SeatPageDataResponse {
     private Long seatId;
     private boolean isAvailable;
     private int seatNumber;
-    private String seatType;
+    private SeatType seatType;
     private int price;
 }
