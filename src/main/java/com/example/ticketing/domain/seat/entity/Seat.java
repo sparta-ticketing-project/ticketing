@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "seats")
+@Table(name = "seats", indexes = @Index(name = "idx_seat_details_id", columnList = "seat_details_id"))
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Seat extends BaseTimeEntity {
@@ -26,19 +26,21 @@ public class Seat extends BaseTimeEntity {
     @JoinColumn(name = "seat_details_id")
     private SeatDetail seatDetail;
 
-    private boolean isAvailable;
+    private Boolean isAvailable;
 
-    private int seatNumber;
+    public void setAvailable(Boolean available) {
+        isAvailable = available;
+    }
+
+    private Integer seatNumber;
 
     @Builder
     public Seat (
-            Long id,
             Concert concert,
             SeatDetail seatDetail,
             boolean isAvailable,
             int seatNumber
     ) {
-        this.id = id;
         this.concert = concert;
         this.seatDetail = seatDetail;
         this.isAvailable = isAvailable;
