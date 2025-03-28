@@ -7,6 +7,8 @@ import com.example.ticketing.domain.order.dto.response.OrderListResponse;
 import com.example.ticketing.domain.order.dto.response.OrderResponse;
 import com.example.ticketing.domain.order.enums.OrderStatus;
 import com.example.ticketing.domain.order.service.OrderService;
+import com.example.ticketing.global.auth.Auth;
+import com.example.ticketing.global.dto.AuthUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,35 +26,35 @@ public class OrderController {
 
     @PostMapping("/v1/concerts/{concertId}/orders")
     public ResponseEntity<CreateOrderResponse> createOrder (
-            @RequestParam Long userId,
+            @Auth AuthUser authUser,
             @PathVariable Long concertId,
             @Valid @RequestBody CreateOrderRequest createOrderRequest
     ) {
-        return ResponseEntity.ok(orderService.createOrder(userId, concertId, createOrderRequest));
+        return ResponseEntity.ok(orderService.createOrder(authUser.getUserId(), concertId, createOrderRequest));
     }
 
     @GetMapping("/v1/orders/{orderId}")
     public ResponseEntity<OrderResponse> getOrder (
-            @RequestParam Long userId,
+            @Auth AuthUser authUser,
             @PathVariable Long orderId
     ) {
-        return ResponseEntity.ok(orderService.getOrder(userId, orderId));
+        return ResponseEntity.ok(orderService.getOrder(authUser.getUserId(), orderId));
     }
 
     @GetMapping("/v1/orders")
     public ResponseEntity<Page<OrderListResponse>> getOrders (
-            @RequestParam Long userId,
+            @Auth AuthUser authUser,
             @RequestParam(defaultValue = "COMPLETED") OrderStatus orderStatus,
             @PageableDefault(page = 1, size = 5) Pageable pageable
     ) {
-        return ResponseEntity.ok(orderService.getOrders(userId, orderStatus, pageable));
+        return ResponseEntity.ok(orderService.getOrders(authUser.getUserId(), orderStatus, pageable));
     }
 
     @DeleteMapping("/v1/orders/{orderId}")
     public ResponseEntity<CancelOrderResponse> cancelOrder (
-            @RequestParam Long userId,
+            @Auth AuthUser authUser,
             @PathVariable Long orderId
     ) {
-        return ResponseEntity.ok(orderService.cancelOrder(userId, orderId));
+        return ResponseEntity.ok(orderService.cancelOrder(authUser.getUserId(), orderId));
     }
 }
