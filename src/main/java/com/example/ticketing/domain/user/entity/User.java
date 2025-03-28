@@ -46,7 +46,7 @@ public class User extends BaseTimeEntity {
     private boolean deleted;
 
     @Builder
-    public User(String email, String password, String username, UserRole userRole, Gender gender, int age) {
+    public User(String email, String password, String username, UserRole userRole, Gender gender, int age, int point, boolean deleted) {
         this.email = email;
         this.password = password;
         this.username = username;
@@ -55,6 +55,12 @@ public class User extends BaseTimeEntity {
         this.age = age;
         this.point = 10000;
         this.deleted = false;
+    }
+
+    public void update(String email, String username, Integer age) {
+        this.email = email;
+        this.username = username;
+        this.age = age;
     }
 
     public void deleteUser() {
