@@ -1,9 +1,6 @@
 package com.example.ticketing.domain.concert.controller;
 
-import com.example.ticketing.domain.concert.dto.response.ConcertRankResponse;
-import com.example.ticketing.domain.concert.dto.response.ConcertSearchResponse;
-import com.example.ticketing.domain.concert.dto.response.ConcertSeatDetailResponse;
-import com.example.ticketing.domain.concert.dto.response.ConcertSingleResponse;
+import com.example.ticketing.domain.concert.dto.response.*;
 import com.example.ticketing.domain.concert.service.ConcertService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -28,13 +27,13 @@ public class ConcertController {
     }
 
     @GetMapping("/v2/concerts/popular")
-    public ResponseEntity<Page<ConcertRankResponse>> findPopularConcertsV2(@RequestParam(defaultValue = "10") Integer limit){
+    public ResponseEntity<List<ConcertRedisRankResponse>> findPopularConcertsV2(@RequestParam(defaultValue = "10") Integer limit){
         return ResponseEntity.ok(concertService.findPopularConcertsV2(limit));
     }
 
-    @GetMapping("/v1/concerts/{concertId}")
-    public ResponseEntity<ConcertSingleResponse> findSingleConcert(@PathVariable Long concertId){
-        return ResponseEntity.ok(concertService.findSingleConcert(concertId));
+    @GetMapping("/v1/concerts/{concertId}/users/{userId}")
+    public ResponseEntity<ConcertSingleResponse> findSingleConcert(@PathVariable Long concertId, @PathVariable Long userId){
+        return ResponseEntity.ok(concertService.findSingleConcert(userId, concertId));
     }
 
     @GetMapping("/v1/concerts")

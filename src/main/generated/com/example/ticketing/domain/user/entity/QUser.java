@@ -21,10 +21,16 @@ public class QUser extends EntityPathBase<User> {
 
     public final com.example.ticketing.global.entity.QBaseTimeEntity _super = new com.example.ticketing.global.entity.QBaseTimeEntity(this);
 
+    public final NumberPath<Integer> age = createNumber("age", Integer.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
+    public final BooleanPath deleted = createBoolean("deleted");
+
     public final StringPath email = createString("email");
+
+    public final EnumPath<com.example.ticketing.domain.user.enums.Gender> gender = createEnum("gender", com.example.ticketing.domain.user.enums.Gender.class);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
@@ -32,6 +38,8 @@ public class QUser extends EntityPathBase<User> {
     public final DateTimePath<java.time.LocalDateTime> modifiedAt = _super.modifiedAt;
 
     public final StringPath password = createString("password");
+
+    public final NumberPath<Integer> point = createNumber("point", Integer.class);
 
     public final StringPath username = createString("username");
 

@@ -1,11 +1,9 @@
 package com.example.ticketing.domain.concert.service;
 
-import com.example.ticketing.domain.concert.dto.response.ConcertRankResponse;
-import com.example.ticketing.domain.concert.dto.response.ConcertSearchResponse;
-import com.example.ticketing.domain.concert.dto.response.ConcertSeatDetailResponse;
-import com.example.ticketing.domain.concert.dto.response.ConcertSingleResponse;
+import com.example.ticketing.domain.concert.dto.response.*;
 import com.example.ticketing.domain.concert.entity.Concert;
 import com.example.ticketing.domain.concert.enums.ConcertType;
+import com.example.ticketing.domain.concert.repository.ConcertRedisRepository;
 import com.example.ticketing.domain.concert.repository.ConcertRepository;
 import com.example.ticketing.domain.seat.entity.SeatDetail;
 import com.example.ticketing.domain.seat.repository.SeatDetailRepository;
@@ -31,11 +29,10 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@EnableCaching
-@EnableScheduling
 public class ConcertService {
     private final ConcertRepository concertRepository;
     private final SeatDetailRepository seatDetailRepository;
+    private final ConcertRedisRepository concertRedisRepository;
 
     @Transactional(readOnly = true)
     public Page<ConcertRankResponse> findPopularConcertsV1(Integer limit){
@@ -58,33 +55,20 @@ public class ConcertService {
         return new PageImpl<>(concertRankResponses, concerts.getPageable(), concerts.getTotalElements());
     }
 
-    @Cacheable(value="popularConcerts", key = "#limit")
-    @Transactional(readOnly = true)
-    public Page<ConcertRankResponse> findPopularConcertsV2(Integer limit){
-        Pageable pageable = PageRequest.of(0, limit);
 
-        List<ConcertRankResponse> concertRankResponses = new ArrayList<>();
-
-        Page<Concert> concerts = concertRepository.findPopularConcerts(pageable);
-
-        Integer rank = 1;
-        for(Concert concert : concerts){
-            concertRankResponses.add(ConcertRankResponse.builder()
-                    .rank(rank++)
-                    .viewCount(concert.getViewCount())
-                    .concertId(concert.getId())
-                    .concertName(concert.getConcertName())
-                    .build());
-        }
-
-        return new PageImpl<>(concertRankResponses, concerts.getPageable(), concerts.getTotalElements());
+    public List<ConcertRedisRankResponse> findPopularConcertsV2(Integer limit){
+        return concertRedisRepository.getRankList(limit);
     }
 
     @Transactional
-    public ConcertSingleResponse findSingleConcert(Long concertId){
+    public ConcertSingleResponse findSingleConcert(Long userId, Long concertId){
+
         Concert concert = concertRepository.findById(concertId).orElseThrow(() -> new CustomException(ExceptionType.CONCERT_NOT_FOUND));
 
-        concert.increaseViewCount();
+        if(concertRedisRepository.isFirstView(userId, concertId)){
+            concertRedisRepository.incrementViewCount(concertId, concert.getConcertName());
+            concert.increaseViewCount();
+        }
 
         List<SeatDetail> seatDetails = seatDetailRepository.findSeatDetailsByConcertId(concertId);
 
@@ -103,6 +87,7 @@ public class ConcertService {
                 .ticketingDate(concert.getTicketingDate())
                 .totalSeatCount(concert.getTotalSeatCount())
                 .availableSeatCount(concert.getAvailableSeatCount())
+                .viewCount(concert.getViewCount())
                 .concertSeatDetailResponses(concertSeatDetailResponses)
                 .build();
     }
@@ -119,13 +104,9 @@ public class ConcertService {
                         .ticketingDate(concert.getTicketingDate())
                         .totalSeatCount(concert.getTotalSeatCount())
                         .availableSeatCount(concert.getAvailableSeatCount())
+                        .viewCount(concert.getViewCount())
                         .build());
 
     }
 
-    @Scheduled(fixedRate = 60000)
-    @CacheEvict(value = "popularConcerts", allEntries = true)
-    public void clearPopularConcertCache(){
-        
-    }
 }
