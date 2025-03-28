@@ -1,0 +1,31 @@
+package com.example.ticketing.domain.user.controller;
+
+import com.example.ticketing.domain.user.dto.request.UserUpdateRequest;
+import com.example.ticketing.domain.user.dto.response.UserResponse;
+import com.example.ticketing.domain.user.dto.response.UserUpdateResponse;
+import com.example.ticketing.domain.user.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/users")
+public class UserController {
+
+    private final UserService userService;
+
+    // 유저 단건 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
+        UserResponse response = userService.getUser(id);
+        return ResponseEntity.ok(response);
+    }
+
+    // 유저 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<UserUpdateResponse> updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest request) {
+        UserUpdateResponse response = userService.updateUser(id, request);
+        return ResponseEntity.ok(response);
+    }
+}
