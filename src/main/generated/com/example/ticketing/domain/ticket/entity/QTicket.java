@@ -34,6 +34,10 @@ public class QTicket extends EntityPathBase<Ticket> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modifiedAt = _super.modifiedAt;
 
+    public final com.example.ticketing.domain.order.entity.QOrder order;
+
+    public final NumberPath<Integer> price = createNumber("price", Integer.class);
+
     public final com.example.ticketing.domain.seat.entity.QSeat seat;
 
     public final EnumPath<com.example.ticketing.domain.ticket.enums.TicketStatus> ticketStatus = createEnum("ticketStatus", com.example.ticketing.domain.ticket.enums.TicketStatus.class);
@@ -59,6 +63,7 @@ public class QTicket extends EntityPathBase<Ticket> {
     public QTicket(Class<? extends Ticket> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.concert = inits.isInitialized("concert") ? new com.example.ticketing.domain.concert.entity.QConcert(forProperty("concert"), inits.get("concert")) : null;
+        this.order = inits.isInitialized("order") ? new com.example.ticketing.domain.order.entity.QOrder(forProperty("order"), inits.get("order")) : null;
         this.seat = inits.isInitialized("seat") ? new com.example.ticketing.domain.seat.entity.QSeat(forProperty("seat"), inits.get("seat")) : null;
         this.user = inits.isInitialized("user") ? new com.example.ticketing.domain.user.entity.QUser(forProperty("user")) : null;
     }

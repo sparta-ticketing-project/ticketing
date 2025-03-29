@@ -24,6 +24,8 @@ public class QOrder extends EntityPathBase<Order> {
 
     public final com.example.ticketing.global.entity.QBaseTimeEntity _super = new com.example.ticketing.global.entity.QBaseTimeEntity(this);
 
+    public final com.example.ticketing.domain.concert.entity.QConcert concert;
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
@@ -56,6 +58,7 @@ public class QOrder extends EntityPathBase<Order> {
 
     public QOrder(Class<? extends Order> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.concert = inits.isInitialized("concert") ? new com.example.ticketing.domain.concert.entity.QConcert(forProperty("concert"), inits.get("concert")) : null;
         this.user = inits.isInitialized("user") ? new com.example.ticketing.domain.user.entity.QUser(forProperty("user")) : null;
     }
 
