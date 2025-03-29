@@ -68,7 +68,7 @@ public class AuthService {
             if (dto.getGender().equals(Gender.NONE)) {
                 throw new CustomException(ExceptionType.UNSUPPORTED_GENDER);
             }
-            if (dto.getAge() == null) {
+            if (dto.getAge() == null || dto.getAge() == 0) {
                 throw new CustomException(ExceptionType.INVALID_USER_AGE);
             }
             User user = saveUser(dto);
