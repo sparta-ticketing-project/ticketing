@@ -67,7 +67,9 @@ public enum ExceptionType {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 문제가 발생했습니다."),
 
     SAME_AS_OLD_PASSWORD(HttpStatus.CONFLICT, "기존 비밀번호와 새 비밀번호가 같으면 안 됩니다."),
-    DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 가입되어 있는 이메일입니다.");
+    DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 가입되어 있는 이메일입니다."),
+    RESOURCE_LOCKED(HttpStatus.CONFLICT, "다른 사용자가 해당 자원을 사용 중입니다."),
+    LOCK_OWNERSHIP_LOST(HttpStatus.CONFLICT, "요청이 만료되었거나 다른 사용자에 의해 처리 중입니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
