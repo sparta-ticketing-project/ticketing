@@ -36,11 +36,12 @@ class ConcertRedisRepositoryTest {
 
         // when
         concertRedisRepository.incrementViewCount(concertId);
+        concertRedisRepository.incrementViewCount(concertId);
 
         // then
         Double score = redisTemplate.opsForZSet().score("ranking", concertId.toString());
 
-        assertThat(score).isEqualTo(1.0);
+        assertThat(score).isEqualTo(2.0);
     }
 
     @Test
