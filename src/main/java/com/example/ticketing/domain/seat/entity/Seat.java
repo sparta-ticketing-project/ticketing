@@ -58,4 +58,8 @@ public class Seat extends BaseTimeEntity {
     public void markAsAvailable() {
         this.isAvailable = true;
     }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
 }
