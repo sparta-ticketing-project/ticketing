@@ -6,6 +6,8 @@ import com.example.ticketing.domain.seat.entity.Seat;
 import com.example.ticketing.domain.seat.entity.SeatDetail;
 import com.example.ticketing.domain.concert.repository.ConcertRepository;
 import com.example.ticketing.domain.seat.repository.SeatRepository;
+import com.example.ticketing.domain.user.entity.User;
+import com.example.ticketing.domain.user.repository.UserRepository;
 import com.example.ticketing.global.exception.CustomException;
 import com.example.ticketing.global.exception.ExceptionType;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,10 +26,16 @@ import java.util.stream.Collectors;
 public class SeatService {
     private final SeatRepository seatRepository;
     private final ConcertRepository concertRepository;
-
+    private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public SeatPageResponse getSeats(Long concertId, int page, int pageSize, Long seatDetailId) {
+    public SeatPageResponse getSeats(Long userId, Long concertId, int page, int pageSize, Long seatDetailId) {
+
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new CustomException(ExceptionType.USER_NOT_FOUND);
+        }
+
         Concert concert = concertRepository.findById(concertId)
                 .orElseThrow(() -> new CustomException(ExceptionType.CONCERT_NOT_FOUND));
 
@@ -70,7 +79,13 @@ public class SeatService {
     }
 
     @Transactional(readOnly = true)
-    public SeatOneResponse getSeat(Long concertId, Long seatId) {
+    public SeatOneResponse getSeat(Long userId, Long concertId, Long seatId) {
+
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new CustomException(ExceptionType.USER_NOT_FOUND);
+        }
+
         Seat seat = seatRepository.findById(seatId)
                 .orElseThrow(() -> new CustomException(ExceptionType.SEAT_NOT_FOUND));
 
