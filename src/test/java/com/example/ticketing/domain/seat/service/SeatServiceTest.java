@@ -8,6 +8,10 @@ import com.example.ticketing.domain.seat.entity.Seat;
 import com.example.ticketing.domain.seat.entity.SeatDetail;
 import com.example.ticketing.domain.seat.enums.SeatType;
 import com.example.ticketing.domain.seat.repository.SeatRepository;
+import com.example.ticketing.domain.user.entity.User;
+import com.example.ticketing.domain.user.enums.Gender;
+import com.example.ticketing.domain.user.enums.UserRole;
+import com.example.ticketing.domain.user.repository.UserRepository;
 import com.example.ticketing.global.exception.CustomException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,10 +33,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-
 @ExtendWith(MockitoExtension.class)
 class SeatServiceTest {
-
 
     @Mock
     private SeatRepository seatRepository;
@@ -43,10 +45,15 @@ class SeatServiceTest {
     @InjectMocks
     private SeatService seatService;
 
+    @Mock
+    private UserRepository userRepository;
+
     private Concert concert;
     private SeatDetail seatDetail;
     private Seat seat1;
     private Seat seat2;
+    private User user;
+    private final Long userId = 1L;
 
     @BeforeEach
     void setUp() {
@@ -84,15 +91,28 @@ class SeatServiceTest {
                 .seatNumber(2)
                 .build();
         ReflectionTestUtils.setField(seat2, "id", 2L);
+
+        user = User.builder()
+                .email("test@example.com")
+                .password("password123")
+                .username("testUser")
+                .userRole(UserRole.USER)
+                .gender(Gender.MALE)
+                .age(30)
+                .point(10000)
+                .deleted(false)
+                .build();
+        ReflectionTestUtils.setField(user, "id", userId);
     }
 
     @Test
     void 좌석_전체_조회를_좌석_상세_ID_파라미터를_입력하고_성공한다() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         Page<Seat> seatPage = new PageImpl<>(Arrays.asList(seat1, seat2));
         when(concertRepository.findById(1L)).thenReturn(Optional.of(concert));
         when(seatRepository.findByConcertIdAndSeatDetailIdAndIsAvailableTrue(eq(1L), eq(1L), any(PageRequest.class))).thenReturn(seatPage);
 
-        SeatPageResponse response = seatService.getSeats(1L, 1, 10, 1L);
+        SeatPageResponse response = seatService.getSeats(userId, 1L, 1, 10, 1L);
 
         assertNotNull(response);
         assertEquals(2, response.getSeatPageDataResponses().size());
@@ -101,11 +121,12 @@ class SeatServiceTest {
 
     @Test
     void 좌석_전체_조회를_좌석_상세_ID_파라미터_없이_성공한다() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         Page<Seat> seatPage = new PageImpl<>(Arrays.asList(seat1, seat2));
         when(concertRepository.findById(1L)).thenReturn(Optional.of(concert));
         when(seatRepository.findByConcertIdAndIsAvailableTrue(eq(1L), any(PageRequest.class))).thenReturn(seatPage);
 
-        SeatPageResponse response = seatService.getSeats(1L, 1, 10, null);
+        SeatPageResponse response = seatService.getSeats(1L, 1L, 10, 10, null);
 
         assertNotNull(response);
         assertEquals(2, response.getSeatPageDataResponses().size());
@@ -114,24 +135,34 @@ class SeatServiceTest {
 
     @Test
     void 좌석_전체_조회_시_콘서트_ID가_없는_경우_예외가_발생한다() {
-        when(concertRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(CustomException.class, () -> seatService.getSeats(1L, 1, 10, null));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(concertRepository.findById(any())).thenReturn(Optional.empty());
+        assertThrows(CustomException.class, () -> seatService.getSeats(userId, null, 1, 10, 1L));
     }
 
     @Test
     void 좌석_전체_조회_시_삭제된_콘서트인_경우_예외가_발생한다() {
-        ReflectionTestUtils.setField(concert, "isDeleted", true); // deleted 상태로 변경
-        when(concertRepository.findById(1L)).thenReturn(Optional.of(concert));
+        Concert deletedConcert = Concert.builder().isDeleted(true).build();
+        ReflectionTestUtils.setField(deletedConcert, "id", 1L);
 
-        assertThrows(CustomException.class, () -> seatService.getSeats(1L, 1, 10, null));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(concertRepository.findById(1L)).thenReturn(Optional.of(deletedConcert));
+
+        assertThrows(CustomException.class, () -> seatService.getSeats(userId, 1L, 1, 10, null));
+    }
+
+    @Test
+    void 좌석_전체_조회_시_유저가_없는_경우_예외가_발생한다() {
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(CustomException.class, () -> seatService.getSeats(userId, 1L, 1, 10, 1L));
     }
 
     @Test
     void 좌석_단건_조회를_성공한다() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(seatRepository.findById(1L)).thenReturn(Optional.of(seat1));
 
-        SeatOneResponse response = seatService.getSeat(1L, 1L);
+        SeatOneResponse response = seatService.getSeat(1L, 1L, 1L);
 
         assertNotNull(response);
         assertEquals(1L, response.getSeatId());
@@ -140,21 +171,24 @@ class SeatServiceTest {
 
     @Test
     void 좌석_단건_조회_시_좌석_ID가_없으면_예외가_발생한다() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(seatRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(CustomException.class, () -> seatService.getSeat(1L, 1L));
+        assertThrows(CustomException.class, () -> seatService.getSeat(1L, 1L, 1L));
     }
 
     @Test
     void 좌석_단건_조회_시_콘서트_ID_없으면_예외_발생한다() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         ReflectionTestUtils.setField(seat1.getConcert(), "isDeleted", true);
         when(seatRepository.findById(1L)).thenReturn(Optional.of(seat1));
 
-        assertThrows(CustomException.class, () -> seatService.getSeat(1L, 1L));
+        assertThrows(CustomException.class, () -> seatService.getSeat(1L, null,1L));
     }
 
     @Test
     void 좌석_단건_조회_시_콘서트_ID에_해당하는_좌석이_아니면_예외_발생한다() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         Concert differentConcert = Concert.builder()
                 .isDeleted(false)
                 .build();
@@ -164,15 +198,22 @@ class SeatServiceTest {
         ReflectionTestUtils.setField(seat3, "id", 1L);
         when(seatRepository.findById(1L)).thenReturn(Optional.of(seat3));
 
-        assertThrows(CustomException.class, () -> seatService.getSeat(1L, 1L));
+        assertThrows(CustomException.class, () -> seatService.getSeat(userId, 1L, 1L));
     }
 
     @Test
     void 좌석_단건_조회_시_좌석_상세_정보가_없으면_예외_발생한다() {
-        ReflectionTestUtils.setField(seat1, "seatDetail", null); // seatDetail 필드를 null로 설정
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        ReflectionTestUtils.setField(seat1, "seatDetail", null);
         when(seatRepository.findById(1L)).thenReturn(Optional.of(seat1));
 
-        assertThrows(CustomException.class, () -> seatService.getSeat(1L, 1L));
+        assertThrows(CustomException.class, () -> seatService.getSeat(1L, 1L, 1L));
+    }
+
+    @Test
+    void 좌석_단건_조회_시_유저가_없는_경우_예외가_발생한다() {
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(CustomException.class, () -> seatService.getSeat(userId, 1L, 1L));
     }
 
 }
