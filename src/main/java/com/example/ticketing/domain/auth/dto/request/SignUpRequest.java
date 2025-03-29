@@ -35,11 +35,10 @@ public class SignUpRequest {
     @NotNull(message = "성별 입력은 필수입니다.")
     private Gender gender;
 
-    @NotNull(message = "나이 입력은 필수입니다.")
-    private int age;
+    private Integer age;
 
     @Builder
-    public SignUpRequest(String email, String password, String username, UserRole userRole, Gender gender, int age) {
+    public SignUpRequest(String email, String password, String username, UserRole userRole, Gender gender, Integer age) {
         this.email = email;
         this.password = password;
         this.username = username;
