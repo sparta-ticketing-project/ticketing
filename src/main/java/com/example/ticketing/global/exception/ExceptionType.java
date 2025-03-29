@@ -16,6 +16,8 @@ public enum ExceptionType {
     MISSING_JWT_TOKEN(HttpStatus.BAD_REQUEST, "토큰이 요청에 포함되지 않았습니다."),
     REQUIRED_JWT_TOKEN(HttpStatus.BAD_REQUEST, "JWT 토큰이 필요합니다."),
     UNSUPPORTED_JWT_TOKEN(HttpStatus.BAD_REQUEST, "지원되지 않는 JWT 토큰입니다."),
+    UNSUPPORTED_GENDER(HttpStatus.BAD_REQUEST, "선택한 UserRole은 이 성별을 지원하지 않습니다."),
+    INVALID_USER_AGE(HttpStatus.BAD_REQUEST, "나이 입력은 필수입니다."),
 
     // User
     USER_POINT_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "포인트가 부족합니다."),
