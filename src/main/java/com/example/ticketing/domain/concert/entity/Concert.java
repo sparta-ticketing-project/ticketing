@@ -45,7 +45,7 @@ public class Concert extends BaseTimeEntity {
 
     private Long viewCount = 0L;
 
-    private boolean isDeleted;
+    private Boolean isDeleted;
 
     public void updateConcert(
             String concertName,
