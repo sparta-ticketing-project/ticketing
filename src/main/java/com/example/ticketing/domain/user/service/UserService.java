@@ -5,6 +5,7 @@ import com.example.ticketing.domain.user.dto.response.UserResponse;
 import com.example.ticketing.domain.user.dto.response.UserUpdateResponse;
 import com.example.ticketing.domain.user.entity.User;
 import com.example.ticketing.domain.user.repository.UserRepository;
+import com.example.ticketing.global.dto.AuthUser;
 import com.example.ticketing.global.exception.CustomException;
 import com.example.ticketing.global.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
@@ -19,15 +20,25 @@ public class UserService {
 
     // 유저 조회
     @Transactional(readOnly = true)
-    public UserResponse getUser(long userId) {
-        User user = userRepository.findById(userId)
+    public UserResponse getUser(Long id, AuthUser authUser) {
+
+        if (!id.equals(authUser.getUserId())) {
+            throw new CustomException(ExceptionType.NO_PERMISSION_ACTION);
+        }
+
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
         return new UserResponse(user.getId(), user.getUsername(), user.getPoint(), user.getEmail(), user.getGender(), user.getAge());
     }
 
     // 유저 수정
     @Transactional
-    public UserUpdateResponse updateUser(Long id, UserUpdateRequest request) {
+    public UserUpdateResponse updateUser(Long id, UserUpdateRequest request, AuthUser authUser) {
+
+        if (!id.equals(authUser.getUserId())) {
+            throw new CustomException(ExceptionType.NO_PERMISSION_ACTION);
+        }
+
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
 
