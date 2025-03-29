@@ -21,6 +21,4 @@ public class UserResponse {
         this.gender = gender;
         this.age = age;
     }
-
-
 }
