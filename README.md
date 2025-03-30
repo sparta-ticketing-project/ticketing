@@ -59,7 +59,7 @@
 
 ### ERD
 
-![image](https://github.com/user-attachments/assets/f2f60656-75c4-4174-bdb9-a9b58988a7a3)
+![image](https://github.com/user-attachments/assets/3e3edf4b-f7b5-4262-aced-31d4a665cb47)
 
 ### api 명세서
 
