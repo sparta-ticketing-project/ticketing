@@ -4,6 +4,7 @@ import com.example.ticketing.domain.concert.dto.response.ConcertRankResponse;
 import com.example.ticketing.domain.concert.entity.Concert;
 import com.example.ticketing.domain.concert.enums.ConcertType;
 import com.example.ticketing.domain.concert.service.ConcertService;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,9 @@ class ConcertRepositoryTest {
     @Autowired
     private View view;
 
-//    @Autowired
-//    ConcertService concertService;
-//
+    @Autowired
+    ConcertService concertService;
+
 //    @Test
 //    void saveTestData(){
 //        List<Concert> concerts = new ArrayList<>();
@@ -51,6 +52,7 @@ class ConcertRepositoryTest {
 //            Concert concert = new Concert(i+1L,
 //                    concertTypes[random.nextInt(concertTypes.length)],
 //                    "user-" + UUID.randomUUID().toString().substring(0,8));
+//            ReflectionTestUtils.setField(concert, "isDeleted", false);
 //            concerts.add(concert);
 //        }
 //        concertRepository.saveAll(concerts);
@@ -71,6 +73,7 @@ class ConcertRepositoryTest {
                 .concertDate(localDateTime)
                 .ticketingDate(localDateTime)
                 .maxTicketPerUser(10)
+                .isDeleted(false)
                 .build();
 
         // when
