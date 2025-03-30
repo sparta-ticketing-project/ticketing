@@ -72,7 +72,7 @@ class UserControllerTest {
 
         when(userService.updateUser(eq(userId), any(UserUpdateRequest.class), any())).thenReturn(userUpdateResponse);
 
-        mockMvc.perform(put("/api/v1/users/{id}", userId)
+        mockMvc.perform(put("/api/v1/update/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userUpdateRequest)))
                 .andExpect(status().isOk())
