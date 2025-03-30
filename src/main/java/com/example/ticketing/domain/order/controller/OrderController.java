@@ -6,6 +6,7 @@ import com.example.ticketing.domain.order.dto.response.CreateOrderResponse;
 import com.example.ticketing.domain.order.dto.response.OrderListResponse;
 import com.example.ticketing.domain.order.dto.response.OrderResponse;
 import com.example.ticketing.domain.order.enums.OrderStatus;
+import com.example.ticketing.domain.order.service.OrderLockFacade;
 import com.example.ticketing.domain.order.service.OrderService;
 import com.example.ticketing.global.auth.Auth;
 import com.example.ticketing.global.dto.AuthUser;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class OrderController {
 
+    private final OrderLockFacade orderLockFacade;
     private final OrderService orderService;
 
     @PostMapping("/v1/concerts/{concertId}/orders")
@@ -30,7 +32,7 @@ public class OrderController {
             @PathVariable Long concertId,
             @Valid @RequestBody CreateOrderRequest createOrderRequest
     ) {
-        return ResponseEntity.ok(orderService.createOrder(authUser.getUserId(), concertId, createOrderRequest));
+        return ResponseEntity.ok(orderLockFacade.createOrder(authUser.getUserId(), concertId, createOrderRequest));
     }
 
     @GetMapping("/v1/orders/{orderId}")
@@ -55,6 +57,6 @@ public class OrderController {
             @Auth AuthUser authUser,
             @PathVariable Long orderId
     ) {
-        return ResponseEntity.ok(orderService.cancelOrder(authUser.getUserId(), orderId));
+        return ResponseEntity.ok(orderLockFacade.cancelOrder(authUser.getUserId(), orderId));
     }
 }

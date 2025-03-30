@@ -45,15 +45,15 @@ public class TicketService {
         return ticketRepository.findAllWithSeatAndSeatDetailByOrder(order);
     }
 
-    public void cancelTickets(Order order) {
+    public List<Ticket> cancelTickets(Order order) {
         List<Ticket> tickets = getTicketsByOrder(order);
 
         for (Ticket ticket : tickets) {
             ticket.markAsUnavailable();
             ticket.getSeat().markAsAvailable();
-            ticket.getSeat().getSeatDetail().increaseAvailableSeatCount(1);
-            ticket.getConcert().increaseAvailableSeatCount(1);
         }
+
+        return tickets;
     }
 
     public void validateUserTicketLimit(Concert concert, User user, int requestedCount) {
@@ -98,8 +98,6 @@ public class TicketService {
 
     private Ticket createTicket(User user, Concert concert, Order order, Seat seat) {
         seat.markAsUnavailable();
-        seat.getSeatDetail().decreaseAvailableSeatCount(1);
-        concert.decreaseAvailableSeatCount(1);
         return Ticket.builder()
                 .user(user)
                 .order(order)

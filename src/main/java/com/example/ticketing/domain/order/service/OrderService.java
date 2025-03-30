@@ -35,7 +35,6 @@ public class OrderService {
     private final ConcertRepository concertRepository;
     private final TicketService ticketService;
 
-    @Transactional
     public CreateOrderResponse createOrder(Long userId, Long concertId, CreateOrderRequest request) {
         User user = getUserById(userId);
         Concert concert = getConcertById(concertId);
@@ -100,12 +99,12 @@ public class OrderService {
 
         checkBeforeCancelOrder(user, order);
 
-        ticketService.cancelTickets(order);
+        List<Ticket> canceledTickets = ticketService.cancelTickets(order);
 
         order.updateOrderStatus(OrderStatus.CANCELED);
         refundUserPoint(user, order.getTotalPrice());
 
-        return CancelOrderResponse.from(order);
+        return CancelOrderResponse.of(order, canceledTickets);
     }
 
     private void checkBeforeCancelOrder(User user, Order order) {
