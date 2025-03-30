@@ -103,12 +103,8 @@ public class Concert extends BaseTimeEntity {
         this.isDeleted = isDeleted;
     }
 
-    public void increaseAvailableSeatCount(int count) {
-        this.availableSeatCount += count;
-    }
-
-    public void decreaseAvailableSeatCount(int count) {
-        this.availableSeatCount -= count;
+    public void increaseAvailableSeatCount(int amount) {
+        this.availableSeatCount += amount;
     }
 
     public Boolean getIsDeleted() {

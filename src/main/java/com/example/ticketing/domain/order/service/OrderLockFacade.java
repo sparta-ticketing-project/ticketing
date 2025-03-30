@@ -38,6 +38,7 @@ public class OrderLockFacade {
 
             CreateOrderResponse response = orderService.createOrder(userId, concertId, request);
 
+            seatCountCacheService.updateSeatCount(SeatCountUpdateRequest.forDecrement(response));
 
             return response;
         } finally {
@@ -57,6 +58,7 @@ public class OrderLockFacade {
 
             CancelOrderResponse response = orderService.cancelOrder(userId, orderId);
 
+            seatCountCacheService.updateSeatCount(SeatCountUpdateRequest.forIncrement(response));
 
             return response;
         } finally {

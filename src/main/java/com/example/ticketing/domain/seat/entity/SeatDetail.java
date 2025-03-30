@@ -57,11 +57,7 @@ public class SeatDetail extends BaseTimeEntity {
         this.availableSeatCount = availableSeatCount;
     }
 
-    public void increaseAvailableSeatCount(int count) {
-        this.availableSeatCount += count;
-    }
-
-    public void decreaseAvailableSeatCount(int count) {
-        this.availableSeatCount -= count;
+    public void increaseAvailableSeatCount(int amount) {
+        this.availableSeatCount += amount;
     }
 }
