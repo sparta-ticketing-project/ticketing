@@ -11,6 +11,7 @@ import com.example.ticketing.domain.user.enums.UserRole;
 import com.example.ticketing.domain.user.service.UserService;
 import com.example.ticketing.global.auth.Auth;
 import com.example.ticketing.global.auth.JwtUtil;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,6 +130,9 @@ class ConcertControllerTest {
         Integer availableSeatCount= 1000;
         Long viewCount = 1000L;
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        String formattedDateTime = localDateTime.format(formatter);
+
         ConcertSingleResponse concertSingleResponse = ConcertSingleResponse.builder()
                 .id(userId)
                 .concertName(concertName)
@@ -150,8 +155,8 @@ class ConcertControllerTest {
                 .andExpect(jsonPath("$.id").value(userId))
                 .andExpect(jsonPath("$.concertName").value(concertName))
                 .andExpect(jsonPath("$.concertType").value(ConcertType.MUSICAL.getDescription()))
-                .andExpect(jsonPath("$.concertDate").value(localDateTime.toString().substring(0, 27)))
-                .andExpect(jsonPath("$.ticketingDate").value(localDateTime.toString().substring(0, 27)))
+                .andExpect(jsonPath("$.concertDate", Matchers.startsWith(formattedDateTime)))
+                .andExpect(jsonPath("$.ticketingDate",  Matchers.startsWith(formattedDateTime)))
                 .andExpect(jsonPath("$.totalSeatCount").value(totalSeatCount))
                 .andExpect(jsonPath("$.availableSeatCount").value(availableSeatCount))
                 .andExpect(jsonPath("$.viewCount").value(viewCount))
@@ -163,6 +168,10 @@ class ConcertControllerTest {
     void findConcertByKeywordTest() throws Exception {
         // given
         LocalDateTime localDateTime = LocalDateTime.now();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        String formattedDateTime = localDateTime.format(formatter);
+
         Integer totalSeatCount = 1000;
         Integer availableSeatCount = 1000;
         Long viewCount = 100L;
@@ -196,8 +205,8 @@ class ConcertControllerTest {
                 .andExpect(jsonPath("$.content.length()").value(5))
                 .andExpect(jsonPath("$.content[0].concertName").value("concert1"))
                 .andExpect(jsonPath("$.content[0].concertType").value("뮤지컬"))
-                .andExpect(jsonPath("$.content[0].concertDate").value(localDateTime.toString().substring(0, 27)))
-                .andExpect(jsonPath("$.content[0].ticketingDate").value(localDateTime.toString().substring(0, 27)))
+                .andExpect(jsonPath("$.content[0].concertDate", Matchers.startsWith(formattedDateTime)))
+                .andExpect(jsonPath("$.content[0].ticketingDate", Matchers.startsWith(formattedDateTime)))
                 .andExpect(jsonPath("$.content[0].totalSeatCount").value(totalSeatCount))
                 .andExpect(jsonPath("$.content[0].availableSeatCount").value(availableSeatCount))
                 .andExpect(jsonPath("$.content[0].viewCount").value(viewCount));
