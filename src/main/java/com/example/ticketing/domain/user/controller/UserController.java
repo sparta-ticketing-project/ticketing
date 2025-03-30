@@ -28,7 +28,7 @@ public class UserController {
     }
 
     // 유저 수정
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<UserUpdateResponse> updateUser(
             @Auth AuthUser authUser,
             @PathVariable Long id,
