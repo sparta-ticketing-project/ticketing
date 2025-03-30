@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/users/{id}")
 public class UserController {
 
     private final UserService userService;
 
     // 유저 단건 조회
-    @GetMapping("/users/{id}")
+    @GetMapping
     public ResponseEntity<UserResponse> getUser(
             @Auth AuthUser authUser,
             @PathVariable Long id) {
@@ -28,7 +28,7 @@ public class UserController {
     }
 
     // 유저 수정
-    @PutMapping("/update/{id}")
+    @PutMapping
     public ResponseEntity<UserUpdateResponse> updateUser(
             @Auth AuthUser authUser,
             @PathVariable Long id,

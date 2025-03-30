@@ -25,10 +25,6 @@ public class UserRoleInterceptor implements HandlerInterceptor {
             throw new CustomException(ExceptionType.NO_PERMISSION_ACTION);
         }
 
-        if (requestURI.startsWith("/api/v1/users") && !userRole.equals(UserRole.USER)) {
-            throw new CustomException(ExceptionType.NO_PERMISSION_ACTION);
-        }
-
         return true;
     }
 }
