@@ -52,7 +52,7 @@ public class SeatService {
         } else {
             // seatDetailId가 제공되지 않은 경우, 기존처럼 모든 좌석을 페이징
             seatPage = seatRepository.findByConcertIdAndIsAvailableTrue(
-                    concertId, PageRequest.of(page - 1, pageSize, Sort.by("seatDetailId")));
+                    concertId, PageRequest.of(page - 1, pageSize, Sort.by("seatNumber")));
         }
 
         List<SeatPageDataResponse> seatPageDataResponses = seatPage.getContent().stream()
